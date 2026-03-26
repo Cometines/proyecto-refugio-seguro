@@ -1,0 +1,12 @@
+# Archivos compilados y ejecutables
+*.exe
+*.out
+*.o
+bin/
+
+# Archivos de datos locales (persistencia)
+data/*.dat
+data/*.txt
+
+# Archivos del sistema operativo
+.DS_Store
