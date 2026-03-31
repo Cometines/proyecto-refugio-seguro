@@ -6,12 +6,12 @@
 // ================================
 
 // Muestra el diseño visual del menú principal
-void mostrar_menu_principal();
+void mostrarMenu();
 
 // Pide un número al usuario y evita que el programa colapse si meten letras
-int leer_entero_seguro(const char* mensaje);
+int pedirEntero(const char* mensaje);
 
 // Pausa el sistema hasta que el usuario presione Enter (útil para leer reportes)
-void pausar_pantalla();
+void pausarPantalla();
 
 #endif // UI_H
