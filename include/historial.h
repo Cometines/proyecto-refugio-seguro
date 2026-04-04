@@ -16,5 +16,4 @@ void deshacerUltimaOperacion(Operacion** tope_historial, Familia** cabeza_lista,
 // Muestra las últimas acciones realizadas
 void mostrarHistorial(Operacion* tope_historial);
 
-
 #endif // HISTORIAL_H
