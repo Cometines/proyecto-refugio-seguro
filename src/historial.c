@@ -31,6 +31,13 @@ static bool vacio(){
     return false;
 }
 
+static bool tipoOperacionVacia(TipoOperacion tipo, Familia** cabeza_lista, Insumo inventario[]){
+    if (tipo == REGISTRO_FAMILIA && cabeza_lista == NULL)
+        return true;
+    if (tipo == ENTREGA_APOYO && inventario[operacion_reciente->id_insumo_involucrado].cantidad_disponible <= 0)
+        return true;
+    return false;
+}
 /** 
  *  @brief Función de apoyo que guarda la nueva acción en la cima de la pila.
  *  @param tope_historial Parametro struct de tipo Operacion que almacena el historial de operaciones
@@ -87,13 +94,14 @@ void deshacerUltimaOperacion(Operacion** tope_historial, Familia** cabeza_lista,
         printf("No hay registros de operación");
         return;//Interrumpe la función si está vacío (no hay operaciones)
     }
+    if(tipoOperacionVacia((*tope_historial)->tipo, *cabeza_lista, inventario))//Comprobamos si el tipo de operación que se revertirá se encuentra en el estado necesario (no vacio)
+        return;//Interrumpimos la funcion
+
     //Volvemos a los valores anteriores a nuevas operaciones correspondientes
     switch ((*tope_historial)->tipo){
         //Para Familia
         case REGISTRO_FAMILIA:
             Familia* familia_reciente = *cabeza_lista;
-            if(*cabeza_lista != NULL)
-                return;//Interrumpe la función
             *cabeza_lista = (*cabeza_lista)->siguiente;
             //Borramos (Liberamos usando la palabra reservada free) las operaciones que se introdujeron por último
             free(familia_reciente);
@@ -101,8 +109,6 @@ void deshacerUltimaOperacion(Operacion** tope_historial, Familia** cabeza_lista,
         
         //Para inventario de insumos
         case ENTREGA_APOYO:
-            if(inventario[(*tope_historial)->id_insumo_involucrado].cantidad_disponible <= 0)
-                return;//Interrumpe la función
             inventario[(*tope_historial)->id_insumo_involucrado].cantidad_disponible = (*tope_historial)->siguiente->cantidad_involucrada;
             break;
         
