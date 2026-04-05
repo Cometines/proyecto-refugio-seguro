@@ -26,7 +26,7 @@ static Operacion* primer_operacion = NULL;
  *  @return true o false
 */
 static bool vacio(){
-    if (primer_operacion != NULL)
+    if (primer_operacion == NULL)
         return true;
     return false;
 }
@@ -83,25 +83,41 @@ void recogerOperacion(Operacion** tope_historial, TipoOperacion tipo, char* desc
  * @param inventario Parametro Array que almacena 5 struct no autoreferenciales de tipo Insumo (no es una lista enlazada) y funge como inventario.
  */
 void deshacerUltimaOperacion(Operacion** tope_historial, Familia** cabeza_lista, Insumo inventario[]){
-    if (vacio()){//Comprobamos que la pila de operaciones no esté vacía
-        //Volvemos a los valores anteriores a nuevas operaciones
-        //Para historial de operaciones
-        *tope_historial = (*tope_historial)->siguiente;
-        //Para Familia
-        Familia* familia_reciente = *cabeza_lista;
-        *cabeza_lista = (*cabeza_lista)->siguiente;
-        //Para inventario de insumos
-        inventario[(*tope_historial)->id_insumo_involucrado].cantidad_disponible = (*tope_historial)->siguiente->cantidad_involucrada;
-
-        //Borramos (Liberamos usando la palabra reservada free) las operaciones/familias que se introdujeron por último
-        free(operacion_reciente);
-        free(familia_reciente);
-
-        //Reiniciamos primer_operacion (fondo) como NULL para evitar un error de memoria
-        if (*tope_historial == NULL)
-            primer_operacion = NULL;
+    if (!vacio()){//Comprobamos que la pila de operaciones no esté vacía
+        printf("No hay registros de operación");
+        return;//Interrumpe la función si está vacío (no hay operaciones)
     }
-    
+    //Volvemos a los valores anteriores a nuevas operaciones correspondientes
+    switch ((*tope_historial)->tipo){
+        //Para Familia
+        case REGISTRO_FAMILIA:
+            Familia* familia_reciente = *cabeza_lista;
+            if(*cabeza_lista != NULL)
+                return;//Interrumpe la función
+            *cabeza_lista = (*cabeza_lista)->siguiente;
+            //Borramos (Liberamos usando la palabra reservada free) las operaciones que se introdujeron por último
+            free(familia_reciente);
+            break;
+        
+        //Para inventario de insumos
+        case ENTREGA_APOYO:
+            if(inventario[(*tope_historial)->id_insumo_involucrado].cantidad_disponible <= 0)
+                return;//Interrumpe la función
+            inventario[(*tope_historial)->id_insumo_involucrado].cantidad_disponible = (*tope_historial)->siguiente->cantidad_involucrada;
+            break;
+        
+        default:
+            //Mensjaje de error.
+            fprintf(stderr, "No fue posible detectar un tipo de operación");
+            return;
+    }
+    //Para historial de operaciones
+    *tope_historial = (*tope_historial)->siguiente;
+    //Borramos (Liberamos usando la palabra reservada free) las operaciones que se introdujeron por último
+    free(operacion_reciente);
+    //Reiniciamos primer_operacion (fondo) como NULL para evitar un error de memoria
+    if (*tope_historial == NULL)
+        primer_operacion = NULL;  
 }
 
 /**
@@ -110,20 +126,20 @@ void deshacerUltimaOperacion(Operacion** tope_historial, Familia** cabeza_lista,
  * @param tope_historial Parametro struct de tipo Operacion que almacena el historial de operaciones.
  */
 void mostrarHistorial(Operacion* tope_historial){
+    if(!vacio()){
+        printf("No hay registros de operación\n----------------------\n\n");
+        return;//Interrumpe la función si está vacío (no hay operaciones)
+    }
     printf("\n----------------------\n");
     printf("\n| Tipo de operación\t| Descripción\t| Folio \t| Id de insumo\t| Cantidad");
     printf("\n----------------------\n");
-    if(comprobarPilaVacia()){
-        for(operacion_reciente = tope_historial;operacion_reciente != NULL;operacion_reciente = operacion_reciente->siguiente)
-        {
-            printf("| %d ",operacion_reciente->tipo);
-            printf("| %s ",operacion_reciente->descripcion);
-            printf("| %s ",operacion_reciente->folio_involucrado);
-            printf("| %s ",operacion_reciente->id_insumo_involucrado);
-            printf("| %s ",operacion_reciente->cantidad_involucrada);
-            printf("\n----------------------\n");
-        }
+    for(operacion_reciente = tope_historial;operacion_reciente != NULL;operacion_reciente = operacion_reciente->siguiente)
+    {
+        printf("| %d ",operacion_reciente->tipo);
+        printf("| %s ",operacion_reciente->descripcion);
+        printf("| %s ",operacion_reciente->folio_involucrado);
+        printf("| %s ",operacion_reciente->id_insumo_involucrado);
+        printf("| %s ",operacion_reciente->cantidad_involucrada);
+        printf("\n----------------------\n");
     }
-    else
-        printf("No hay registros de operación\n----------------------\n\n");
 }
