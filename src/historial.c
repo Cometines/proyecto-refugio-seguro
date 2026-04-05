@@ -90,7 +90,7 @@ void recogerOperacion(Operacion** tope_historial, TipoOperacion tipo, char* desc
  * @param inventario Parametro Array que almacena 5 struct no autoreferenciales de tipo Insumo (no es una lista enlazada) y funge como inventario.
  */
 void deshacerUltimaOperacion(Operacion** tope_historial, Familia** cabeza_lista, Insumo inventario[]){
-    if (!vacio()){//Comprobamos que la pila de operaciones no esté vacía
+    if (vacio()){//Comprobamos que la pila de operaciones no esté vacía
         printf("No hay registros de operación");
         return;//Interrumpe la función si está vacío (no hay operaciones)
     }
@@ -132,7 +132,7 @@ void deshacerUltimaOperacion(Operacion** tope_historial, Familia** cabeza_lista,
  * @param tope_historial Parametro struct de tipo Operacion que almacena el historial de operaciones.
  */
 void mostrarHistorial(Operacion* tope_historial){
-    if(!vacio()){
+    if(vacio()){
         printf("No hay registros de operación\n----------------------\n\n");
         return;//Interrumpe la función si está vacío (no hay operaciones)
     }
