@@ -40,7 +40,6 @@ typedef struct Operacion{
 
     struct Operacion* siguiente;
 }Operacion;
-typedef int numero;
 
 
 #endif
