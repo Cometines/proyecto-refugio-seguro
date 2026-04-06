@@ -37,3 +37,8 @@ int pedirEntero(const char* mensaje){
     } while (n!=1);
     return digito;
 }
+
+void pausarPantalla(){
+    printf("Presiona Enter para continuar...");
+    getchar();
+}
