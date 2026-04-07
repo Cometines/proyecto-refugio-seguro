@@ -12,7 +12,7 @@ typedef struct {
 }Insumo;
 
 typedef struct Familia{
-    int folio;
+    char folio;
     char nombre_representante[50];
     int edad;
     int cantidad_integrantes;
