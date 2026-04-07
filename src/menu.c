@@ -14,3 +14,31 @@ void mostrar_menu_principal() {
     printf("6. Guardar y Salir\n");
     printf("=========================================\n");
 }
+
+/**
+ * @brief 
+ * 
+ * @param mensaje 
+ * @return int 
+ */
+int pedirEntero(const char* mensaje){
+    int digito = 0, n = 0;
+    do
+    {
+        n = scanf("%d", &digito);
+        if (n !=1)
+        {
+            printf("%s", mensaje);
+            int c;
+            while ((c = getchar()) != '\n' && c != EOF) {
+                // Descarta caracteres
+            }
+        }
+    } while (n!=1);
+    return digito;
+}
+
+void pausarPantalla(){
+    printf("Presiona Enter para continuar...");
+    getchar();
+}
