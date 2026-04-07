@@ -14,6 +14,7 @@ typedef struct {
 typedef struct Familia{
     int folio;
     char nombre_representante[50];
+    int edad;
     int cantidad_integrantes;
     char necesidades[100];
 
