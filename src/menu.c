@@ -23,12 +23,13 @@ void mostrar_menu_principal() {
  */
 int pedirEntero(const char* mensaje){
     int digito = 0, n = 0;
+    printf("%s", mensaje);
     do
     {
         n = scanf("%d", &digito);
         if (n !=1)
         {
-            printf("%s", mensaje);
+            printf("Por favor, ingresa un valor númerico valido: ");
             int c;
             while ((c = getchar()) != '\n' && c != EOF) {
                 // Descarta caracteres
@@ -38,7 +39,24 @@ int pedirEntero(const char* mensaje){
     return digito;
 }
 
+char* pedirCadena(const char* mensaje){
+    char* cadena = malloc(50 * sizeof(char));
+
+    if (cadena == NULL){
+        fprintf(stderr, "Error: No fue posible asignar memoria");
+        return NULL;
+    }
+    else{
+        printf("%s", mensaje);
+        fgets(cadena, 50, stdin);
+        cadena[strcspn(cadena, "\n")] = '\0';
+    }
+    
+    return cadena;
+}
+
 void pausarPantalla(){
+    int c;
     printf("Presiona Enter para continuar...");
-    getchar();
+    while ((c = getchar()) != '\n' && c != EOF);
 }
