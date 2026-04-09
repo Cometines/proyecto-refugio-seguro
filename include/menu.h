@@ -17,4 +17,6 @@ char* pedirCadena(const char* mensaje);
 // Pausa el sistema hasta que el usuario presione Enter (útil para leer reportes)
 void pausarPantalla();
 
+void limpiarConsola();
+
 #endif // UI_H

@@ -15,6 +15,18 @@ void mostrar_menu_principal() {
     printf("=========================================\n");
 }
 
+// --- Detección del Sistema Operativo ---
+
+#ifdef _WIN32
+    // Si es Windows, incluir la librería de Windows para Sleep()
+    #include <windows.h>
+#else
+    // Si no es Windows (asumimos UNIX: Linux/macOS), incluir unistd.h
+    #include <unistd.h> // Para usleep()
+#endif
+
+// ----------------------------------------
+
 /**
  * @brief 
  * 
@@ -39,6 +51,12 @@ int pedirEntero(const char* mensaje){
     return digito;
 }
 
+/**
+ * @brief 
+ * 
+ * @param mensaje 
+ * @return char* 
+ */
 char* pedirCadena(const char* mensaje){
     char* cadena = malloc(50 * sizeof(char));
 
@@ -55,8 +73,26 @@ char* pedirCadena(const char* mensaje){
     return cadena;
 }
 
+/**
+ * @brief 
+ * 
+ */
 void pausarPantalla(){
     int c;
     printf("Presiona Enter para continuar...");
     while ((c = getchar()) != '\n' && c != EOF);
+}
+
+/**
+ * @brief 
+ * 
+ */
+void limpiarConsola(){
+    #ifdef _WIN32
+        // Código para Windows
+        system("cls");
+    #else
+        // Código para UNIX (Linux/macOS)
+        system("clear");
+    #endif
 }
