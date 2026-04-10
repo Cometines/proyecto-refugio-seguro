@@ -14,6 +14,6 @@ void registrarFamilia(Familia** cabeza_lista);
 void mostrarFamiliasRegistradas(Familia* cabeza_lista);
 
 // Busca una familia específica por su número de folio (útil para la atención)
-Familia* buscarFamiliaPorFolio(Familia* cabeza_lista, int folio);
+Familia* buscarFamiliaPorFolio(Familia* cabeza_lista, char folio);
 
-#endif // FAMILIAS_H
+#endif 

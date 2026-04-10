@@ -1,6 +1,6 @@
 #ifndef ESTRUCTURAS_H
 #define ESTRUCTURAS_H
-
+#include<stdbool.h>
 
 // ======================
 // INVENTARIO
@@ -12,16 +12,18 @@ typedef struct {
 }Insumo;
 
 typedef struct Familia{
-    int folio;
+    char folio[16];
     char nombre_representante[50];
+    int edad;
     int cantidad_integrantes;
-    char necesidades[100];
+    char necesidad_especial[100];
+    bool requiere_atencion_medica;
 
     struct Familia* siguiente;
 }Familia;
 
 typedef struct NodoCola{
-    int folio_familia;
+    char folio_familia[16];
     struct NodoCola* siguiente;
 }ColaAtencion;
 

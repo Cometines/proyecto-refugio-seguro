@@ -85,7 +85,7 @@ void registrarFamilia(Familia** cabeza_lista){
     printf("Ingrese la cantidad de integrantes de la familia)\n");
     scanf("%d",& familia_nueva->cantidad_integrantes);
     printf("Ingrese las necesidades de la familia\n");
-    scanf("%s", familia_nueva->necesidades);
+    scanf("%s", familia_nueva->necesidad_especial);
 
     //generación y asignación del folio.
     int aleatorio = (rand() % 900) + 100;
@@ -117,3 +117,5 @@ void mostrarFamiliasRegistradas(Familia* cabeza_lista){
     }
     printf("--------------------------------------------------------------------------------------------------------------------------------\n");
 } 
+
+
