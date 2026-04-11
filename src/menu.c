@@ -15,18 +15,6 @@ void mostrar_menu_principal() {
     printf("=========================================\n");
 }
 
-// --- Detección del Sistema Operativo ---
-
-#ifdef _WIN32
-    // Si es Windows, incluir la librería de Windows para Sleep()
-    #include <windows.h>
-#else
-    // Si no es Windows (asumimos UNIX: Linux/macOS), incluir unistd.h
-    #include <unistd.h> // Para usleep()
-#endif
-
-// ----------------------------------------
-
 /**
  * @brief 
  * 
