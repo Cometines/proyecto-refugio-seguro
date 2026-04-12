@@ -31,9 +31,17 @@ typedef struct Familia{
     struct Familia* siguiente;
 }Familia;
 
+//Nodo de genérico que sirve para cualquiera de las colas
 typedef struct NodoCola{
-    char folio_familia[16];
+    Familia datos_familia; //Apunta a la familia directamente en la lista
     struct NodoCola* siguiente;
+}NodoCola;
+
+//Estructura de las colas
+//En el main.c se instanciarán: ColaAtencion cola_medica; y ColaAtencion cola_insumos;
+typedef struct{
+    NodoCola* frente;
+    NodoCola* fondo;
 }ColaAtencion;
 
 typedef enum{
