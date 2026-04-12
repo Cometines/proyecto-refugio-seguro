@@ -70,6 +70,56 @@ static void validarDatosRepresentante(char *nombre_direccion, int *edad_direccio
 }
 
 /**
+ * @brief Gestiona la asignación del nivel de atención y requerimientos especiales de una familia.
+ * Esta función despliega un menú interactivo que permite al usuario seleccionar entre cuatro 
+ * niveles de atención. Si el nivel seleccionado es 'Atención Especial' (3) o 'Atención Completa' (4), 
+ * solicita información adicional sobre la necesidad específica y marca el estado como pendiente.
+ * Utiliza un bucle do-while para garantizar que la selección del nivel sea válida (rango 1-4).
+ * @param nivel_asignado Puntero al entero (o enum) donde se almacenará el nivel seleccionado por el usuario.
+ * @param requerimiento_especial Puntero a la cadena de caracteres donde se guardará la descripción de la necesidad (solo niveles 3 y 4).
+ * @param requerimiento_especial_atentido Puntero al valor booleano que se inicializa en 'false' si existe un requerimiento especial.
+ * * @note El uso de punteros permite que los cambios realizados dentro de la función se reflejen directamente en la estructura original de la familia.
+ */
+static void nivelAtencionFamilia(int *nivel_asignado,char *requerimiento_especial, bool *requerimiento_especial_atentido){
+    do
+    {
+        printf("Por favor seleccione el tipo de atencion que requiere la familia\n");
+        printf("Nota : Por defecto todas las familias seran referidas a la zona de insumos\n");
+        printf("1. Atencion basica(Solo necesita insumos).\n");
+        printf("2. Atención medica\n");
+        printf("3.Atencion especial \n");
+        printf("4.Atencion completa\n");
+        scanf("%d", nivel_asignado);
+        switch (*nivel_asignado)
+        {
+            case ATENCION_BASICA:
+                printf("Seleccionaste: Basica\n");
+                break;
+            case ATENCION_MEDICA:
+                printf("Seleccionaste: Medica\n");
+                break;
+            case ATENCION_ESPECIAL:
+                printf("Seleccionaste: Especial\n");
+                printf("Ingrese su requerimiento especial: \n");
+                scanf("%s",requerimiento_especial);
+                *requerimiento_especial_atentido = false;
+                break;
+            case ATENCION_COMPLETA:
+                printf("Seleccionaste: Completa\n");
+                printf("Ingrese su requerimiento especial: \n");
+                scanf("%s",requerimiento_especial);
+                *requerimiento_especial_atentido = false;
+                break;
+            default:
+                printf("Opcion no valida, intenta de nuevo.\n");
+                break;
+
+        }
+    } while (*nivel_asignado < 1 || *nivel_asignado > 4);
+    
+}
+
+/**
  * @brief Función que hace el alta de las familias en la lista.
  * @param cabeza_lista Doble puntero a la estructura Familia. 
  * Se pasa por referencia (puntero a puntero) para permitir que la función 
@@ -94,11 +144,12 @@ void registrarFamilia(Familia** cabeza_lista){
 
     //Registro de la familia y sus campos.
     strcpy(familia_nueva->nombre_representante,nombre_valido);
-    familia_nueva->edad = edad_valida;
+    familia_nueva->edad_representante = edad_valida;
     printf("Ingrese la cantidad de integrantes de la familia)\n");
     scanf("%d",& familia_nueva->cantidad_integrantes);
-    printf("Ingrese las necesidades de la familia\n");
-    scanf("%s", familia_nueva->necesidad_especial);
+
+
+    nivelAtencionFamilia(&familia_nueva->nivel_asignado,familia_nueva->requerimiento_especial, &familia_nueva->requerimiento_especial_atendido);
 
     //generación y asignación del folio.
     generarFolio("FAM",familia_nueva->folio);
@@ -119,12 +170,22 @@ void mostrarFamiliasRegistradas(Familia* cabeza_lista){
         printf("Aun no existen familias registradas\n");
         return;
     }
-    printf("%-50s %-20s %-5s %-15s \n","NOMBRE DEL REPRESENTANTE","EDAD DEL REPRESENTANTE","CANT. DE INTEGRANTES", "NOM. DE FOLIO");
+    printf("\n%-15s %-30s %-8s %-15s %-15s\n", "FOLIO", "REPRESENTANTE", "EDAD", "INTEGRANTES", "NIVEL");
     printf("--------------------------------------------------------------------------------------------------------------------------------\n");
     
     while(aux != NULL){
-        printf("%-50s %-20d %-5d %-15s",aux->nombre_representante,aux->edad,aux->cantidad_integrantes,aux->folio);
-        printf("\n");
+        printf("%-15s %-30s %-8d %-15d ", aux->folio, aux->nombre_representante, aux->edad_representante, aux->cantidad_integrantes);
+        switch (aux->nivel_asignado)
+        {
+            case ATENCION_BASICA:   printf("%-15s\n", "Basica"); break;
+            case ATENCION_MEDICA:   printf("%-15s\n", "Medica"); break;
+            case ATENCION_ESPECIAL: printf("%-15s\n", "Especial"); break;
+            case ATENCION_COMPLETA: printf("%-15s\n", "Completa"); break;
+            default:                printf("%-15s\n", "No asignado"); break;
+        }
+        if (aux->nivel_asignado > ATENCION_MEDICA){
+            printf(" -> REQUERIMIENTO: %-50s | ESTADO: %s\n", aux->requerimiento_especial,aux->requerimiento_especial_atendido ? "Atendido" : "Pendiente");
+        }
         aux = aux ->siguiente;
     }
     printf("--------------------------------------------------------------------------------------------------------------------------------\n");
