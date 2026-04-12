@@ -11,16 +11,16 @@ typedef struct {
 
 
 typedef enum{
-    ATENCION_BASICA=1,   
-    ATENCION_MEDICA=2,   
-    ATENCION_ESPECIAL=3, 
-    ATENCION_COMPLETA=4   
+    ATENCION_BASICA=1,   // Va directo a la fila de insumos
+    ATENCION_MEDICA=2,   // FilaMedica -> FilaInsumos
+    ATENCION_ESPECIAL=3, // Va directo a la fila de insumos, anota requerimiento especial
+    ATENCION_COMPLETA=4  // FilaMedica -> FilaInsumos, anota requerimiento especial
 }NivelAtencion;
 
 typedef struct Familia{
     char folio[16];
     char nombre_representante[50];
-    int edad;
+    int edad_representante;
     int cantidad_integrantes;
     char necesidad_especial[100];
     bool requiere_atencion_medica;
