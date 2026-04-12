@@ -2,7 +2,6 @@
 #define ESTRUCTURAS_H
 #include<stdbool.h>
 
-
 typedef struct {
     int id_insumo;
     char nombre[50];
@@ -18,12 +17,16 @@ typedef enum{
 }NivelAtencion;
 
 typedef struct Familia{
-    char folio[16];
+    char folio[16]; 
     char nombre_representante[50];
-    int edad_representante;
+    int edad_representante; // Si <18, entonces no se puede registrar como representante
     int cantidad_integrantes;
-    char necesidad_especial[100];
-    bool requiere_atencion_medica;
+
+    NivelAtencion nivel_asignado; // Almacena el nivel de atención asignado a la familia
+
+    // Solo se usan cuando el nivel asignado es 3 o 4
+    char requerimiento_especial[100]; //Si el nivel asignado es 1 o 2, = "Sin requerimientos especiales"
+    bool requerimiento_especial_atendido; //True = Atendida , False = Pendiente
 
     struct Familia* siguiente;
 }Familia;
