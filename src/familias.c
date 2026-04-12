@@ -12,12 +12,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-/**
- * @var count
- * @brief Contador estático que rastrea el número total de familias registradas.
- * Se utiliza para la generación incremental de folios (ej. FAM-001, FAM-002).
- */
-static int count=0;
 
 /**
  * @brief Función de apoyo que verifica si un campo de edad es mayor de edad.
@@ -29,6 +23,26 @@ static bool mayorEdad(int edad){
 
         return true;
     return false;    
+}
+
+/**
+ * @brief Funcion para generar un folio en base a un prefijo asignado.
+ * @param prefijo_folio Prefijo que determina el tipo de folio (ejem. FAM, MED, AUX).
+ * @note el prefijo pasado como parametro no debe de ser mayor a 7 caracteres,
+ * ya que en la estructura el folio es de tamaño 16, por lo que deben ser prefijos
+ * cortos y conciso, para evitar un error de desbordamiento.
+ * @param destino_folio Puntero que determina el destino del folio generado.
+ * 
+ */
+static void generarFolio(const char *prefijo_folio,char *destino_folio){
+    if (strlen(prefijo_folio)>7) {
+        printf("Debug: El prefijo '%s' es muy largo. Se truncará.\n", prefijo_folio);
+    }
+    static int count=1; // Contador estático que rastrea el número total de familias registradas.
+    int aleatorio;
+    aleatorio = (rand() % 900) + 100;
+    snprintf(destino_folio,16,"%s-%03d-%d", prefijo_folio, count,aleatorio);
+    count++;
 }
 
 /**
@@ -79,7 +93,6 @@ void registrarFamilia(Familia** cabeza_lista){
     } 
 
     //Registro de la familia y sus campos.
-    count++;
     strcpy(familia_nueva->nombre_representante,nombre_valido);
     familia_nueva->edad = edad_valida;
     printf("Ingrese la cantidad de integrantes de la familia)\n");
@@ -88,8 +101,7 @@ void registrarFamilia(Familia** cabeza_lista){
     scanf("%s", familia_nueva->necesidad_especial);
 
     //generación y asignación del folio.
-    int aleatorio = (rand() % 900) + 100;
-    snprintf(familia_nueva->folio,12,"%s-%03d-%d", "FAM", count,aleatorio);
+    generarFolio("FAM",familia_nueva->folio);
 
     //inserción en la lista
     familia_nueva ->siguiente= *cabeza_lista;
