@@ -2,14 +2,20 @@
 #define ESTRUCTURAS_H
 #include<stdbool.h>
 
-// ======================
-// INVENTARIO
-// ======================
+
 typedef struct {
     int id_insumo;
     char nombre[50];
     int cantidad_disponible;
 }Insumo;
+
+
+typedef enum{
+    ATENCION_BASICA=1,   // Solo se le encola para recibir insumos
+    ATENCION_MEDICA=2,   // Se encola para atención médica, después para recibir insumos
+    ATENCION_ESPECIAL=3, // 
+    ATENCION_COMPLETA=4
+}NivelAtencion;
 
 typedef struct Familia{
     char folio[16];
