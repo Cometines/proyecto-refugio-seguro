@@ -14,6 +14,6 @@ void recogerOperacion(Operacion** tope_historial, TipoOperacion tipo, char* desc
 void deshacerUltimaOperacion(Operacion** tope_historial, Familia** cabeza_lista, Insumo inventario[]);
 
 // Muestra las últimas acciones realizadas
-void mostrarHistorial(Operacion* tope_historial);
+void mostrarHistorial(Operacion** tope_historial);
 
 #endif // HISTORIAL_H
