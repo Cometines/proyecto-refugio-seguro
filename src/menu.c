@@ -7,7 +7,7 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <string.h>//Libreria faltante
 #include "../include/menu.h"
 
 void mostrar_menu_principal() {
