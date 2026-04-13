@@ -9,6 +9,10 @@
 #include <stdlib.h>
 #include "../include/menu.h"
 
+/**
+ * @brief Función usada para la UI, muestra las opciones disponibles al usuario.
+ * 
+ */
 void mostrar_menu_principal() {
     printf("\n=========================================\n");
     printf("       REFUGIO SEGURO - SOCONUSCO        \n");
@@ -26,7 +30,7 @@ void mostrar_menu_principal() {
  * @brief  Función que valida y devuelve una cantidad entera.
  * 
  * @param mensaje Char constante que recibirá una cadena con la instrucción para el usuario de lo que debe introducir.
- * @return int Retorna lo escrito una vez validado como correcto
+ * @return int Retorna lo escrito una vez validado como correcto.
  */
 int pedirEntero(const char* mensaje){
     int digito = 0, n = 0;
@@ -50,7 +54,7 @@ int pedirEntero(const char* mensaje){
  * @brief Función que valida y devuelve el texto que se solicita.
  * 
  * @param mensaje Char constante que recibirá una cadena con la instrucción para el usuario de lo que debe introducir.
- * @return char* Retorna lo escrito una vez validado como correcto
+ * @return char* Retorna lo escrito una vez validado como correcto.
  */
 char* pedirCadena(const char* mensaje){
     char* cadena = malloc(50 * sizeof(char));///* @warning Posible correción del tamaño debido al tamaño de "descripción"

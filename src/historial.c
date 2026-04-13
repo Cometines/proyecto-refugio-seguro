@@ -50,6 +50,7 @@ static void apilarOperacion(Operacion** tope_historial){
     else{
         operacion_reciente->siguiente=tope_historial;
         *tope_historial=operacion_reciente;
+        operacion_reciente->siguiente = *tope_historial;
     }
 }
 
