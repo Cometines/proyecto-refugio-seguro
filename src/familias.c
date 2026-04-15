@@ -13,6 +13,19 @@
 #include <stdbool.h>
 #include <string.h>
 
+static void convertirAMayusculas(char *cadena){
+    for(int i=0; cadena[i]; i++){
+        cadena[i] = toupper(cadena[i]);
+    }
+}
+
+static bool listaVacia(Familia *cabeza_lista){
+    Familia *aux = cabeza_lista;
+    if(aux == NULL)
+        return true;
+    return false;
+}
+
 /**
  * @brief Función de apoyo que verifica si un campo de edad es mayor de edad.
  * @param edad Valor entero que representa los años de la persona a validar.
@@ -191,4 +204,22 @@ void mostrarFamiliasRegistradas(Familia* cabeza_lista){
     printf("--------------------------------------------------------------------------------------------------------------------------------\n");
 } 
 
+Familia* buscarFamiliaPorFolio(Familia* cabeza_lista, char *folio){
+    Familia *aux = cabeza_lista;
+    if(listaVacia(aux)){
+        printf("La lista de familias esta vacia por lo que no se puede realizar una busqueda\n");
+        return;
+    }
+    convertirAMayusculas(folio);
+    while(aux != NULL){
+        if(strcmp(aux->folio, folio) == 0){
+            printf("La familia con folio %s ha sido encontrada exitosamente\n");
+            return aux;
+        }
+        aux = aux->siguiente;
+    }
+    printf("La familia con folio %s no ha sido encontrada en la lista\n");
+    return NULL;
+    
+}
 
