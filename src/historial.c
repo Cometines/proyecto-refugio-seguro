@@ -71,7 +71,7 @@ static void apilarOperacion(Operacion** tope_historial){
  *  @param cantidad Parametro de tipo int que almacena la cantidad de un tipo de insumo.
 */
 void recogerOperacion(Operacion** tope_historial, TipoOperacion tipo, char* desc, int folio, int id_insumo, int cantidad){
-    operacion_reciente = (Operacion*) malloc(sizeof(Operacion*));
+    operacion_reciente = (Operacion*) malloc(sizeof(Operacion));
     operacion_reciente->tipo = tipo;
     strncpy(operacion_reciente->descripcion, desc, 99);
     operacion_reciente->descripcion[99] = '\0';
@@ -131,7 +131,7 @@ void deshacerUltimaOperacion(Operacion** tope_historial, Familia** cabeza_lista,
  * 
  * @param tope_historial Parametro struct de tipo Operacion que almacena el historial de operaciones.
  */
-void mostrarHistorial(Operacion* tope_historial){
+void mostrarHistorial(Operacion** tope_historial){
     if(vacio()){
         printf("No hay registros de operación\n----------------------\n\n");
         return;//Interrumpe la función si está vacío (no hay operaciones)
@@ -139,7 +139,7 @@ void mostrarHistorial(Operacion* tope_historial){
     printf("\n----------------------\n");
     printf("\n| Tipo de operación\t| Descripción\t| Folio \t| Id de insumo\t| Cantidad");
     printf("\n----------------------\n");
-    for(operacion_reciente = tope_historial;operacion_reciente != NULL;operacion_reciente = operacion_reciente->siguiente)
+    for(operacion_reciente = (*tope_historial);operacion_reciente != NULL;operacion_reciente = operacion_reciente->siguiente)
     {
         printf("| %d ",operacion_reciente->tipo);
         printf("| %s ",operacion_reciente->descripcion);
