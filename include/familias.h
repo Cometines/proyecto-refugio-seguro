@@ -16,4 +16,7 @@ void mostrarFamiliasRegistradas(Familia* cabeza_lista);
 // Busca una familia específica por su número de folio (útil para la atención)
 Familia* buscarFamiliaPorFolio(Familia* cabeza_lista, char *folio);
 
+// Funcion que gestiona los metodos de familia
+void menuFamilias(Familia** puntero_lista_main);
+
 #endif 

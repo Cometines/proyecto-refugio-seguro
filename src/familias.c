@@ -6,19 +6,31 @@
  * @date 2026-04-08
  */
 
-
+#include "../include/menu.h"
 #include "../include/familias.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 
+
+/**
+ * @brief Funcion de apoyo recibe una cadena y la convierte toda a mayusculas.
+ * @param cadena es la dirección de memoria de la cadena a hacer mayuscula
+ */
 static void convertirAMayusculas(char *cadena){
     for(int i=0; cadena[i]; i++){
         cadena[i] = toupper(cadena[i]);
     }
 }
 
+/**
+ * @brief funcion de apoyo que corrobora si la lista esta vacia
+ * 
+ * @param cabeza_lista puntero hacia la cabeza de lista
+ * @return true valor retornado si la lista esta vacia
+ * @return false valor retornado si la lista no esta vacia
+ */
 static bool listaVacia(Familia *cabeza_lista){
     Familia *aux = cabeza_lista;
     if(aux == NULL)
@@ -204,22 +216,75 @@ void mostrarFamiliasRegistradas(Familia* cabeza_lista){
     printf("--------------------------------------------------------------------------------------------------------------------------------\n");
 } 
 
+/**
+ * @brief Función que busca a una familia mediante un folio 
+ * 
+ * @param cabeza_lista es el puntero a la cabeza de la lista , y se usa para tener acceso a lista
+ * @param folio Es el folio de la familia a buscar
+ * @return Familia* devuelve la dirección de memoria del nodo de la familia encontrada 
+ * @return NULL valor devolvido si no se encuentra a la familia
+ */
 Familia* buscarFamiliaPorFolio(Familia* cabeza_lista, char *folio){
     Familia *aux = cabeza_lista;
     if(listaVacia(aux)){
         printf("La lista de familias esta vacia por lo que no se puede realizar una busqueda\n");
-        return;
+        return NULL;
     }
     convertirAMayusculas(folio);
     while(aux != NULL){
         if(strcmp(aux->folio, folio) == 0){
-            printf("La familia con folio %s ha sido encontrada exitosamente\n");
+            printf("La familia con folio %s ha sido encontrada exitosamente\n", folio);
             return aux;
         }
         aux = aux->siguiente;
     }
-    printf("La familia con folio %s no ha sido encontrada en la lista\n");
+    printf("La familia con folio %s no ha sido encontrada en la lista\n",folio);
     return NULL;
     
 }
+
+void menuFamilias (Familia** puntero_lista_main){
+    int op;
+    char *folio;
+    do
+    {
+        printf("Bienvenido al area del manejo de las familias\n");
+        printf("1. Alta de una familia\n");
+        printf("2. Buscar Familia(mediante folio)\n");
+        printf("3. Imprimir Fammilias\n");
+        printf("4. Salir del area de familias\n");
+        op = pedirEntero("Ingrese la operacion a realizar:");
+
+        switch (op)
+        {
+        case 1:
+            registrarFamilia(puntero_lista_main);
+            break;
+
+        case 2:
+            folio = pedirCadena("Ingrese el folio de la familia que desea buscar: ");
+            if(folio != NULL)
+                buscarFamiliaPorFolio(puntero_lista_main,folio);
+
+            free(folio);
+            break;
+
+        case 3: 
+            mostrarFamiliasRegistradas(puntero_lista_main);
+            break;
+
+        case 4: 
+            printf("Regresando al menu principal..\n");
+            break;
+
+        default: printf("[!] Opcion no valida (1-4).\n");
+            break;
+        }
+        
+        if(op == 4)
+            pausarPantalla();
+    } while (op!=4);
+    
+}
+
 
