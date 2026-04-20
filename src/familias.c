@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-
+#include <ctype.h>
 
 /**
  * @brief Funcion de apoyo recibe una cadena y la convierte toda a mayusculas.
@@ -185,6 +185,26 @@ void registrarFamilia(Familia** cabeza_lista){
 } 
 
 /**
+ * @brief Función que imprimi a una familia con el formato de tabla
+ * 
+ * @param familia es la dirección de memoria de la familia a imprimir
+ */
+void static imprimirFichaFamiliar(Familia* familia){
+    printf("%-15s %-30s %-8d %-15d ", familia->folio, familia->nombre_representante, familia->edad_representante, familia->cantidad_integrantes);
+        switch (familia->nivel_asignado)
+        {
+            case ATENCION_BASICA:   printf("%-15s\n", "Basica"); break;
+            case ATENCION_MEDICA:   printf("%-15s\n", "Medica"); break;
+            case ATENCION_ESPECIAL: printf("%-15s\n", "Especial"); break;
+            case ATENCION_COMPLETA: printf("%-15s\n", "Completa"); break;
+            default:                printf("%-15s\n", "No asignado"); break;
+        }
+        if (familia->nivel_asignado > ATENCION_MEDICA){
+            printf(" -> REQUERIMIENTO: %-50s | ESTADO: %s\n", familia->requerimiento_especial,familia->requerimiento_especial_atendido ? "Atendido" : "Pendiente");
+        }
+}
+
+/**
  * @brief Funcion que permite imprimir la lista de las familias.
  * @param cabeza_lista Puntero de la estructura Familia.
  * Se pasa como puntero, para que la funcion pueda tener acceso a la lista y asi poder imprimirla.
@@ -199,18 +219,7 @@ void mostrarFamiliasRegistradas(Familia* cabeza_lista){
     printf("--------------------------------------------------------------------------------------------------------------------------------\n");
     
     while(aux != NULL){
-        printf("%-15s %-30s %-8d %-15d ", aux->folio, aux->nombre_representante, aux->edad_representante, aux->cantidad_integrantes);
-        switch (aux->nivel_asignado)
-        {
-            case ATENCION_BASICA:   printf("%-15s\n", "Basica"); break;
-            case ATENCION_MEDICA:   printf("%-15s\n", "Medica"); break;
-            case ATENCION_ESPECIAL: printf("%-15s\n", "Especial"); break;
-            case ATENCION_COMPLETA: printf("%-15s\n", "Completa"); break;
-            default:                printf("%-15s\n", "No asignado"); break;
-        }
-        if (aux->nivel_asignado > ATENCION_MEDICA){
-            printf(" -> REQUERIMIENTO: %-50s | ESTADO: %s\n", aux->requerimiento_especial,aux->requerimiento_especial_atendido ? "Atendido" : "Pendiente");
-        }
+        imprimirFichaFamiliar(aux);
         aux = aux ->siguiente;
     }
     printf("--------------------------------------------------------------------------------------------------------------------------------\n");
@@ -233,17 +242,25 @@ Familia* buscarFamiliaPorFolio(Familia* cabeza_lista, char *folio){
     convertirAMayusculas(folio);
     while(aux != NULL){
         if(strcmp(aux->folio, folio) == 0){
-            printf("La familia con folio %s ha sido encontrada exitosamente\n", folio);
             return aux;
         }
         aux = aux->siguiente;
     }
-    printf("La familia con folio %s no ha sido encontrada en la lista\n",folio);
     return NULL;
     
 }
 
+/**
+ * 
+ * @brief Función encargada de gestionar los métodos del módulo del alta de familias.
+ * Despliega un menú interactivo para realizar altas, búsquedas y visualización de registros.
+ * 
+ * @param[in,out] puntero_lista_main Doble puntero hacia la lista que se encuentra en el main.
+ * Es fundamental para que las modificaciones (como el alta de una familia) persistan 
+ * en la estructura original del programa.
+ */
 void menuFamilias (Familia** puntero_lista_main){
+    Familia *aux;
     int op;
     char *folio;
     do
@@ -263,14 +280,22 @@ void menuFamilias (Familia** puntero_lista_main){
 
         case 2:
             folio = pedirCadena("Ingrese el folio de la familia que desea buscar: ");
-            if(folio != NULL)
-                buscarFamiliaPorFolio(puntero_lista_main,folio);
+            if(folio != NULL) {
+                aux = buscarFamiliaPorFolio(*puntero_lista_main,folio);
+                
 
-            free(folio);
+                if(aux != NULL){
+                    printf("La familia con folio %s ha sido encontrada exitosamente\n", folio);
+                    imprimirFichaFamiliar(aux);
+                }else {
+                    printf("La familia con folio %s no ha sido encontrada en la lista\n",folio);
+                }
+                free(folio);
+            } 
             break;
 
         case 3: 
-            mostrarFamiliasRegistradas(puntero_lista_main);
+            mostrarFamiliasRegistradas(*puntero_lista_main);
             break;
 
         case 4: 
