@@ -144,6 +144,32 @@ static void nivelAtencionFamilia(int *nivel_asignado,char *requerimiento_especia
     
 }
 
+void static confirmarOperacion(const char *prefijo_operacion,Familia *Operacion){
+    bool flag=false;
+    int op;
+    do{
+        printf("%S\n",prefijo_operacion);
+        printf("1. Confirmar operación\n");
+        printf("2. Cancelar la operación\n");
+        op = pedirEntero("Ingrese su opción");
+        switch (op)
+        {
+        case 1:
+            printf("La operación ha sido confirmada\n");
+            flag=true;
+            break;
+        case 2:
+            printf("La operación ha sido cancelada exitosamente\n");
+            free(Operacion);
+            flag=true;
+            break;
+        default: printf("Opción no valida\n");
+            break;
+        }
+    }while (flag!=true);
+
+}
+
 /**
  * @brief Función que hace el alta de las familias en la lista.
  * @param cabeza_lista Doble puntero a la estructura Familia. 
@@ -173,12 +199,12 @@ void registrarFamilia(Familia** cabeza_lista){
     printf("Ingrese la cantidad de integrantes de la familia)\n");
     scanf("%d",& familia_nueva->cantidad_integrantes);
 
-
     nivelAtencionFamilia(&familia_nueva->nivel_asignado,familia_nueva->requerimiento_especial, &familia_nueva->requerimiento_especial_atendido);
 
     //generación y asignación del folio.
     generarFolio("FAM",familia_nueva->folio);
 
+    confirmarOperacion("Desea confirmar el registro de la familia?",familia_nueva);
     //inserción en la lista
     familia_nueva ->siguiente= *cabeza_lista;
     *cabeza_lista = familia_nueva;
@@ -282,8 +308,6 @@ void menuFamilias (Familia** puntero_lista_main){
             folio = pedirCadena("Ingrese el folio de la familia que desea buscar: ");
             if(folio != NULL) {
                 aux = buscarFamiliaPorFolio(*puntero_lista_main,folio);
-                
-
                 if(aux != NULL){
                     printf("La familia con folio %s ha sido encontrada exitosamente\n", folio);
                     imprimirFichaFamiliar(aux);
