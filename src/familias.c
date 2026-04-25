@@ -82,9 +82,9 @@ static void validarDatosRepresentante(char *nombre_direccion, int *edad_direccio
     char nombre_temporal[50];
     int edad_temporal;
     do{
-        printf("Ingrese el nombre del representante de la familia\n");
+        printf("Ingrese el nombre del representante de la familia: \n");
         scanf("%s", nombre_temporal);
-        printf("Ingrese la edad del representante\n");
+        printf("Ingrese la edad del representante: \n");
         scanf("%d", & edad_temporal);
         if ( ( flag=mayorEdad(edad_temporal) ) == false ){
             printf("La edad del representante no es la adecuada, por lo que ingrese a una persona apta para el registro\n");
@@ -105,7 +105,7 @@ static void validarDatosRepresentante(char *nombre_direccion, int *edad_direccio
  * @param requerimiento_especial_atentido Puntero al valor booleano que se inicializa en 'false' si existe un requerimiento especial.
  * * @note El uso de punteros permite que los cambios realizados dentro de la función se reflejen directamente en la estructura original de la familia.
  */
-static void nivelAtencionFamilia(int *nivel_asignado,char *requerimiento_especial, bool *requerimiento_especial_atentido){
+static void nivelAtencionFamilia(NivelAtencion *nivel_asignado,char *requerimiento_especial, bool *requerimiento_especial_atentido){
     do
     {
         printf("Por favor seleccione el tipo de atencion que requiere la familia\n");
@@ -144,14 +144,14 @@ static void nivelAtencionFamilia(int *nivel_asignado,char *requerimiento_especia
     
 }
 
-void static confirmarOperacion(const char *prefijo_operacion,Familia *Operacion){
+static void confirmarOperacion(const char *prefijo_operacion,Familia *Operacion){
     bool flag=false;
     int op;
     do{
-        printf("%S\n",prefijo_operacion);
+        printf("%s\n",prefijo_operacion);
         printf("1. Confirmar operación\n");
         printf("2. Cancelar la operación\n");
-        op = pedirEntero("Ingrese su opción");
+        op = pedirEntero("Ingrese su opción: \n");
         switch (op)
         {
         case 1:
@@ -196,7 +196,7 @@ void registrarFamilia(Familia** cabeza_lista){
     //Registro de la familia y sus campos.
     strcpy(familia_nueva->nombre_representante,nombre_valido);
     familia_nueva->edad_representante = edad_valida;
-    printf("Ingrese la cantidad de integrantes de la familia)\n");
+    printf("Ingrese la cantidad de integrantes de la familia: \n");
     scanf("%d",& familia_nueva->cantidad_integrantes);
 
     nivelAtencionFamilia(&familia_nueva->nivel_asignado,familia_nueva->requerimiento_especial, &familia_nueva->requerimiento_especial_atendido);
@@ -204,7 +204,7 @@ void registrarFamilia(Familia** cabeza_lista){
     //generación y asignación del folio.
     generarFolio("FAM",familia_nueva->folio);
 
-    confirmarOperacion("Desea confirmar el registro de la familia?",familia_nueva);
+    confirmarOperacion("¿Desea confirmar el registro de la familia?",familia_nueva);
     //inserción en la lista
     familia_nueva ->siguiente= *cabeza_lista;
     *cabeza_lista = familia_nueva;
@@ -215,7 +215,7 @@ void registrarFamilia(Familia** cabeza_lista){
  * 
  * @param familia es la dirección de memoria de la familia a imprimir
  */
-void static imprimirFichaFamiliar(Familia* familia){
+static void imprimirFichaFamiliar(Familia* familia){
     printf("%-15s %-30s %-8d %-15d ", familia->folio, familia->nombre_representante, familia->edad_representante, familia->cantidad_integrantes);
         switch (familia->nivel_asignado)
         {
@@ -268,10 +268,12 @@ Familia* buscarFamiliaPorFolio(Familia* cabeza_lista, char *folio){
     convertirAMayusculas(folio);
     while(aux != NULL){
         if(strcmp(aux->folio, folio) == 0){
+            printf("La familia con folio %s ha sido encontrada exitosamente\n", folio);
             return aux;
         }
         aux = aux->siguiente;
     }
+    printf("La familia con folio %s no ha sido encontrada en la lista\n", folio);
     return NULL;
     
 }
@@ -294,9 +296,9 @@ void menuFamilias (Familia** puntero_lista_main){
         printf("Bienvenido al area del manejo de las familias\n");
         printf("1. Alta de una familia\n");
         printf("2. Buscar Familia(mediante folio)\n");
-        printf("3. Imprimir Fammilias\n");
+        printf("3. Imprimir Familias\n");
         printf("4. Salir del area de familias\n");
-        op = pedirEntero("Ingrese la operacion a realizar:");
+        op = pedirEntero("Ingrese la operacion a realizar: \n");
 
         switch (op)
         {
