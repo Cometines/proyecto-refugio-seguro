@@ -10,7 +10,7 @@
 #include <string.h>//Libreria faltante
 #include "../include/menu.h"
 
-void mostrar_menu_principal() {
+void mostrarMenu() {
     printf("\n=========================================\n");
     printf("       REFUGIO SEGURO - SOCONUSCO        \n");
     printf("=========================================\n");
