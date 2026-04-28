@@ -79,13 +79,11 @@ static void generarFolio(const char *prefijo_folio,char *destino_folio){
  */
 static void validarDatosRepresentante(char *nombre_direccion, int *edad_direccion){
     bool flag=false;
-    char nombre_temporal[50];
+    char *nombre_temporal;
     int edad_temporal;
     do{
-        printf("Ingrese el nombre del representante de la familia: \n");
-        scanf("%s", nombre_temporal);
-        printf("Ingrese la edad del representante: \n");
-        scanf("%d", & edad_temporal);
+        nombre_temporal = pedirCadena("Ingrese el nombre del representante de la familia");
+        edad_temporal = pedirEntero("Ingrese la edad del representante: ");
         if ( ( flag=mayorEdad(edad_temporal) ) == false ){
             printf("La edad del representante no es la adecuada, por lo que ingrese a una persona apta para el registro\n");
         }
@@ -114,7 +112,11 @@ static void nivelAtencionFamilia(NivelAtencion *nivel_asignado,char *requerimien
         printf("2. Atención medica\n");
         printf("3.Atencion especial \n");
         printf("4.Atencion completa\n");
-        scanf("%d", nivel_asignado);
+        nivel_asignado = pedirEntero ("");
+        //Arranca los valores con valores iniciales para evitar problemas con valores basura en la ram
+        strcpy(requerimiento_especial,"Vacio");
+        *requerimiento_especial_atentido = false;
+
         switch (*nivel_asignado)
         {
             case ATENCION_BASICA:
@@ -125,15 +127,11 @@ static void nivelAtencionFamilia(NivelAtencion *nivel_asignado,char *requerimien
                 break;
             case ATENCION_ESPECIAL:
                 printf("Seleccionaste: Especial\n");
-                printf("Ingrese su requerimiento especial: \n");
-                scanf("%s",requerimiento_especial);
-                *requerimiento_especial_atentido = false;
+                requerimiento_especial = pedirCadena("Ingrese su requerimiento especial:");
                 break;
             case ATENCION_COMPLETA:
                 printf("Seleccionaste: Completa\n");
-                printf("Ingrese su requerimiento especial: \n");
-                scanf("%s",requerimiento_especial);
-                *requerimiento_especial_atentido = false;
+                requerimiento_especial = pedirCadena("Ingrese su requerimiento especial:");
                 break;
             default:
                 printf("Opcion no valida, intenta de nuevo.\n");
@@ -185,7 +183,7 @@ void registrarFamilia(Familia** cabeza_lista){
 
     //reservación de memoria.
     struct Familia * familia_nueva;
-    familia_nueva = (struct Familia*) malloc (sizeof(struct Familia));
+    familia_nueva = (struct Familia*) calloc (1,sizeof(struct Familia));
     
     //verificación de que exista la memoria reservada para el registro y asi evitar un error.
     if(familia_nueva == NULL){
@@ -196,8 +194,7 @@ void registrarFamilia(Familia** cabeza_lista){
     //Registro de la familia y sus campos.
     strcpy(familia_nueva->nombre_representante,nombre_valido);
     familia_nueva->edad_representante = edad_valida;
-    printf("Ingrese la cantidad de integrantes de la familia: \n");
-    scanf("%d",& familia_nueva->cantidad_integrantes);
+    familia_nueva->cantidad_integrantes = pedirEntero ("Ingrese la cantidad de integrantes de la familia");
 
     nivelAtencionFamilia(&familia_nueva->nivel_asignado,familia_nueva->requerimiento_especial, &familia_nueva->requerimiento_especial_atendido);
 

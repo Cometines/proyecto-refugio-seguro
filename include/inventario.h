@@ -3,17 +3,19 @@
 
 #include "estructuras.h"
 
-// ==========================================
-// FUNCIONES DEL MANEJO DE INVENTARIP | Randy
-// ==========================================
-
-// Inicializa el arreglo con las 5 categorías de insumos en cero
+// Inicializa el inventario
 void inicializarInventario(Insumo inventario[]);
 
-// Muestra la tabla con las existencias actuales
+// Muestra inventario y alertas
 void mostrarReporteInventario(Insumo inventario[]);
 
-// Función auxiliar para sumar o restar existencias (se usa al atender o al deshacer)
+// Suma o resta stock
 void actualizarInsumo(Insumo inventario[], int id_insumo, int cantidad);
+
+// Calcula insumos según integrantes
+int calcularEntrega(Familia* familia);
+
+// Devuelve stock (deshacer)
+void devolverStock(Insumo inventario[], int id_insumo, int cantidad);
 
 #endif
