@@ -7,7 +7,7 @@ SRC_DIR = src
 BIN_DIR = bin
 
 # Archivos fuente y el nombre del ejecutable final
-SRCS = $(SRC_DIR)/main.c $(SRC_DIR)/ui.c $(SRC_DIR)/familias.c $(SRC_DIR)/inventario.c $(SRC_DIR)/atencion.c $(SRC_DIR)/historial.c
+SRCS = $(SRC_DIR)/main.c $(SRC_DIR)/menu.c $(SRC_DIR)/familias.c $(SRC_DIR)/inventario.c $(SRC_DIR)/atencion.c $(SRC_DIR)/historial.c
 EXEC = $(BIN_DIR)/refugio
 
 # Regla principal: compilar todo

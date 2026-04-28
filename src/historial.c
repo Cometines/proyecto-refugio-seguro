@@ -48,7 +48,7 @@ static void apilarOperacion(Operacion** tope_historial){
         *tope_historial=primer_operacion=operacion_reciente;
     }
     else{
-        operacion_reciente->siguiente=tope_historial;
+        operacion_reciente->siguiente=*tope_historial;
         *tope_historial=operacion_reciente;
     }
 }
@@ -94,19 +94,19 @@ void deshacerUltimaOperacion(Operacion** tope_historial, Familia** cabeza_lista,
         printf("No hay registros de operación");
         return;//Interrumpe la función si está vacío (no hay operaciones)
     }
-    if(tipoOperacionVacia((*tope_historial)->tipo, *cabeza_lista, inventario))//Comprobamos si el tipo de operación que se revertirá se encuentra en el estado necesario (no vacio)
+    if(tipoOperacionVacia((*tope_historial)->tipo, cabeza_lista, inventario))//Comprobamos si el tipo de operación que se revertirá se encuentra en el estado necesario (no vacio)
         return;//Interrumpimos la funcion
 
     //Volvemos a los valores anteriores a nuevas operaciones correspondientes
     switch ((*tope_historial)->tipo){
         //Para Familia
-        case REGISTRO_FAMILIA:
+        case REGISTRO_FAMILIA:{
             Familia* familia_reciente = *cabeza_lista;
             *cabeza_lista = (*cabeza_lista)->siguiente;
             //Borramos (Liberamos usando la palabra reservada free) las operaciones que se introdujeron por último
             free(familia_reciente);
             break;
-        
+        }
         //Para inventario de insumos
         case ENTREGA_APOYO:
             inventario[(*tope_historial)->id_insumo_involucrado].cantidad_disponible = (*tope_historial)->siguiente->cantidad_involucrada;
@@ -143,9 +143,9 @@ void mostrarHistorial(Operacion** tope_historial){
     {
         printf("| %d ",operacion_reciente->tipo);
         printf("| %s ",operacion_reciente->descripcion);
-        printf("| %s ",operacion_reciente->folio_involucrado);
-        printf("| %s ",operacion_reciente->id_insumo_involucrado);
-        printf("| %s ",operacion_reciente->cantidad_involucrada);
+        printf("| %d ",operacion_reciente->folio_involucrado);
+        printf("| %d ",operacion_reciente->id_insumo_involucrado);
+        printf("| %d ",operacion_reciente->cantidad_involucrada);
         printf("\n----------------------\n");
     }
 }
