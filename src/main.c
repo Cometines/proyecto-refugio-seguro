@@ -8,6 +8,7 @@
 #include "../include/atencion.h"
 #include "../include/historial.h"
 #include "../include/menu.h" 
+#include "../include/archivos.h"
 
 int main() {
     // 1. Inicializar variables principales
@@ -27,7 +28,7 @@ int main() {
     // inicializarInventario(inventario); // Descomentar cuando el .c de Randy esté listo
 
     printf("Iniciando sistema...\n");
-    // cargarDatosArchivo(&lista_familias, inventario); // Descomentar cuando archivos.c esté listo
+    cargarDatosArchivo(&lista_familias, inventario, &cola_medica, &cola_insumos);
     
     int opcion = 0;
 
@@ -76,7 +77,7 @@ int main() {
                 
             case 6:
                 printf("\nGuardando datos...\n");
-                // guardarDatosArchivo(&lista_familias, inventario);
+                guardarDatosArchivo(&lista_familias, inventario, &cola_medica, &cola_insumos);
                 printf("¡Hasta pronto!\n");
                 break;
                 
