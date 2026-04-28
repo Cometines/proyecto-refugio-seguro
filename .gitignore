@@ -7,6 +7,7 @@ bin/
 # Archivos de datos locales (persistencia)
 data/*.dat
 data/*.txt
+data/*.csv
 
 # Archivos del sistema operativo
 .DS_Store
