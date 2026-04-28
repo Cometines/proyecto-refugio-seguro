@@ -79,13 +79,11 @@ static void generarFolio(const char *prefijo_folio,char *destino_folio){
  */
 static void validarDatosRepresentante(char *nombre_direccion, int *edad_direccion){
     bool flag=false;
-    char nombre_temporal[50];
+    char *nombre_temporal;
     int edad_temporal;
     do{
-        printf("Ingrese el nombre del representante de la familia\n");
-        scanf("%s", nombre_temporal);
-        printf("Ingrese la edad del representante\n");
-        scanf("%d", & edad_temporal);
+        nombre_temporal = pedirCadena("Ingrese el nombre del representante de la familia");
+        edad_temporal = pedirEntero("Ingrese la edad del representante: ");
         if ( ( flag=mayorEdad(edad_temporal) ) == false ){
             printf("La edad del representante no es la adecuada, por lo que ingrese a una persona apta para el registro\n");
         }
@@ -114,7 +112,7 @@ static void nivelAtencionFamilia(int *nivel_asignado,char *requerimiento_especia
         printf("2. Atención medica\n");
         printf("3.Atencion especial \n");
         printf("4.Atencion completa\n");
-        scanf("%d", nivel_asignado);
+        nivel_asignado = pedirEntero ("");
         switch (*nivel_asignado)
         {
             case ATENCION_BASICA:
@@ -196,8 +194,7 @@ void registrarFamilia(Familia** cabeza_lista){
     //Registro de la familia y sus campos.
     strcpy(familia_nueva->nombre_representante,nombre_valido);
     familia_nueva->edad_representante = edad_valida;
-    printf("Ingrese la cantidad de integrantes de la familia)\n");
-    scanf("%d",& familia_nueva->cantidad_integrantes);
+    familia_nueva->cantidad_integrantes = pedirEntero ("Ingrese la cantidad de integrantes de la familia");
 
     nivelAtencionFamilia(&familia_nueva->nivel_asignado,familia_nueva->requerimiento_especial, &familia_nueva->requerimiento_especial_atendido);
 
