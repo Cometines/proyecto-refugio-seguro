@@ -113,6 +113,10 @@ static void nivelAtencionFamilia(int *nivel_asignado,char *requerimiento_especia
         printf("3.Atencion especial \n");
         printf("4.Atencion completa\n");
         nivel_asignado = pedirEntero ("");
+        //Arranca los valores con valores iniciales para evitar problemas con valores basura en la ram
+        strcpy(requerimiento_especial,"Vacio");
+        *requerimiento_especial_atentido = false;
+
         switch (*nivel_asignado)
         {
             case ATENCION_BASICA:
@@ -123,15 +127,11 @@ static void nivelAtencionFamilia(int *nivel_asignado,char *requerimiento_especia
                 break;
             case ATENCION_ESPECIAL:
                 printf("Seleccionaste: Especial\n");
-                printf("Ingrese su requerimiento especial: \n");
-                scanf("%s",requerimiento_especial);
-                *requerimiento_especial_atentido = false;
+                requerimiento_especial = pedirCadena("Ingrese su requerimiento especial:");
                 break;
             case ATENCION_COMPLETA:
                 printf("Seleccionaste: Completa\n");
-                printf("Ingrese su requerimiento especial: \n");
-                scanf("%s",requerimiento_especial);
-                *requerimiento_especial_atentido = false;
+                requerimiento_especial = pedirCadena("Ingrese su requerimiento especial:");
                 break;
             default:
                 printf("Opcion no valida, intenta de nuevo.\n");
@@ -183,7 +183,7 @@ void registrarFamilia(Familia** cabeza_lista){
 
     //reservación de memoria.
     struct Familia * familia_nueva;
-    familia_nueva = (struct Familia*) malloc (sizeof(struct Familia));
+    familia_nueva = (struct Familia*) calloc (1,sizeof(struct Familia));
     
     //verificación de que exista la memoria reservada para el registro y asi evitar un error.
     if(familia_nueva == NULL){
