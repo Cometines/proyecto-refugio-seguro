@@ -34,7 +34,7 @@ void recogerOperacion(Operacion** tope_historial, TipoOperacion tipo, char* desc
  *                      @note Aquí solo lo usamos para volver al estado anterior de la estructura.
  * @param inventario Parametro Array que almacena 5 struct no autoreferenciales de tipo Insumo (no es una lista enlazada) y funge como inventario.
  */
-void deshacerUltimaOperacion(Operacion** tope_historial, Familia** cabeza_lista, Insumo inventario[]);
+void deshacerUltimaOperacion(Operacion** tope_historial, Familia** cabeza_lista, ColaAtencion** cola_atencion, Insumo inventario[]);
 
 /**
  * @brief Función que se encarga de mostrar el historial de operaciones registrado.

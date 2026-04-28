@@ -70,7 +70,7 @@ void recogerOperacion(Operacion** tope_historial, TipoOperacion tipo, char* desc
     apilarOperacion(tope_historial);
 }
 
-void deshacerUltimaOperacion(Operacion** tope_historial, Familia** cabeza_lista, ColaAtencion** cola_atencion,Insumo inventario[]){
+void deshacerUltimaOperacion(Operacion** tope_historial, Familia** cabeza_lista, ColaAtencion** cola_atencion, Insumo inventario[]){
     if (vacio()){//Comprobamos que la pila de operaciones no esté vacía
         printf("No hay registros de operación");
         return;//Interrumpe la función si está vacío (no hay operaciones)
@@ -85,7 +85,7 @@ void deshacerUltimaOperacion(Operacion** tope_historial, Familia** cabeza_lista,
             Familia* familia_reciente = *cabeza_lista;
             ColaAtencion* cola_atencion_reciente = *cola_atencion;
             *cabeza_lista = (*cabeza_lista)->siguiente;
-            *cola_atencion = (*cola_atencion)->frente->siguiente;
+            (*cola_atencion)->frente = (*cola_atencion)->frente->siguiente;
             
             //Borramos (Liberamos usando la palabra reservada free) las operaciones que se introdujeron por último
             free(familia_reciente);

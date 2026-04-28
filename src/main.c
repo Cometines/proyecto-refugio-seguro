@@ -71,7 +71,8 @@ int main() {
                 
             case 5:
                 printf("\n--- DESHACER ULTIMA ACCION ---\n");
-                deshacerUltimaOperacion(&historial_operaciones, &lista_familias, inventario);
+                ColaAtencion *ptr = &cola_medica;
+                deshacerUltimaOperacion(&historial_operaciones, &lista_familias, &ptr, inventario);
                 break;
                 
             case 6:
