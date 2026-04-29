@@ -33,7 +33,7 @@ typedef struct Familia{
 
 //Nodo de genérico que sirve para cualquiera de las colas
 typedef struct NodoCola{
-    Familia datos_familia; //Apunta a la familia directamente en la lista
+    Familia* datos_familia; //Apunta a la familia directamente en la lista
     struct NodoCola* siguiente;
 }NodoCola;
 

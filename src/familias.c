@@ -8,6 +8,7 @@
 
 #include "../include/menu.h"
 #include "../include/familias.h"
+#include "../include/atencion.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -177,7 +178,7 @@ static bool confirmarOperacion(const char *prefijo_operacion){
  * modifique la dirección de memoria de la cabeza original de la lista, 
  * permitiendo la inserción de nuevos nodos.
  */
-void registrarFamilia(Familia** cabeza_lista){
+void registrarFamilia(Familia** cabeza_lista, ColaAtencion* cola_medica, ColaAtencion* cola_insumos){
     //validación de los datos del representante.
     char nombre_valido[50];
     int edad_valida=0;
@@ -210,6 +211,9 @@ void registrarFamilia(Familia** cabeza_lista){
     //inserción en la lista
     familia_nueva ->siguiente= *cabeza_lista;
     *cabeza_lista = familia_nueva;
+
+    //Se encola la familia a la fila correspondiente
+    enrutarFamilia(cola_medica, cola_insumos, familia_nueva);
 } 
 
 /**
@@ -289,7 +293,7 @@ Familia* buscarFamiliaPorFolio(Familia* cabeza_lista, char *folio){
  * Es fundamental para que las modificaciones (como el alta de una familia) persistan 
  * en la estructura original del programa.
  */
-void menuFamilias (Familia** puntero_lista_main){
+void menuFamilias (Familia** puntero_lista_main, ColaAtencion* cola_medica, ColaAtencion* cola_insumos){
     Familia *aux;
     int op;
     char *folio;
@@ -305,7 +309,7 @@ void menuFamilias (Familia** puntero_lista_main){
         switch (op)
         {
         case 1:
-            registrarFamilia(puntero_lista_main);
+            registrarFamilia(puntero_lista_main, cola_medica, cola_insumos);
             break;
 
         case 2:

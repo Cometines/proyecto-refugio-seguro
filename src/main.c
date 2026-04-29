@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 // Módulos del sistema
 #include "../include/estructuras.h" 
@@ -11,21 +12,19 @@
 #include "../include/archivos.h"
 
 int main() {
+    srand(time(NULL));
+
     // 1. Inicializar variables principales
     Familia* lista_familias = NULL;                 
-    
-    // Ahora son DOS colas, según la arquitectura que definimos
     ColaAtencion cola_medica;
     ColaAtencion cola_insumos;                       
-    
     Insumo inventario[5];                           
     Operacion* historial_operaciones = NULL;        
     
-    // 2. Inicializar las estructuras para que no apunten a basura en memoria
-    // (Aseguramos que los punteros internos arranquen en NULL y contadores en 0)
-    //inicializarCola(&cola_medica);
-    //inicializarCola(&cola_insumos);
-    // inicializarInventario(inventario); // Descomentar cuando el .c de Randy esté listo
+    // 2. Inicializar las estructuras
+    inicializarCola(&cola_medica);
+    inicializarCola(&cola_insumos);
+    inicializarInventario(inventario);
 
     printf("Iniciando sistema...\n");
     cargarDatosArchivo(&lista_familias, inventario, &cola_medica, &cola_insumos);
@@ -34,7 +33,7 @@ int main() {
 
     // 3. Bucle principal
     do {
-        limpiarConsola(); // Función que agregó Kelaia para mantener limpia la pantalla
+        limpiarConsola(); 
         mostrarMenu();
         
         opcion = pedirEntero("Seleccione una opcion: ");
@@ -42,56 +41,55 @@ int main() {
         switch(opcion) {
             case 1:
                 limpiarConsola();
-                // Ervin ya hizo un submenú completo, ¡lo mandamos llamar directo!
-                menuFamilias(&lista_familias);
+                menuFamilias(&lista_familias, &cola_medica, &cola_insumos);
                 break;
                 
-            case 2:
+            case 2: {
                 limpiarConsola();
-                printf("\n--- ENCOLAR PARA ATENCION ---\n");
-                printf("Aqui el Integrante 3 pedira el folio, buscara a la familia y llamara a enrutarFamilia()\n");
-                // Ejemplo de lo que ira aqui:
-                // char* folio = pedirCadena("Ingrese folio: ");
-                // Familia* fam = buscarFamiliaPorFolio(lista_familias, folio);
-                // if (fam) enrutarFamilia(&cola_medica, &cola_insumos, fam);
+                printf("\n--- ATENCION EN VENTANILLA ---\n");
+                printf("1. Atender al siguiente paciente en la Cola Medica\n");
+                printf("2. Entregar insumos a la siguiente familia en la Cola de Insumos\n");
+                int sub_op = pedirEntero("Seleccione la accion: ");
+                
+                if (sub_op == 1) {
+                    atenderColaMedica(&cola_medica, &cola_insumos, &historial_operaciones);
+                } else if (sub_op == 2) {
+                    atenderColaInsumos(&cola_insumos, inventario, &historial_operaciones);
+                } else {
+                    printf("Opcion no valida.\n");
+                }
                 break;
+            }
                 
             case 3:
                 limpiarConsola();
-                printf("\n--- ENTREGAR APOYO ---\n");
-                printf("Aqui ira un pequeno sub-menu para decidir si se atiende al doctor o insumos\n");
+                printf("\n--- REPORTE CONSOLIDADO ---\n");
+                mostrarFamiliasRegistradas(lista_familias); 
+                mostrarReporteInventario(inventario); 
+                mostrarEstadoColas(&cola_medica, &cola_insumos); 
                 break;
                 
             case 4:
-                limpiarConsola();
-                printf("\n--- REPORTE CONSOLIDADO ---\n");
-                mostrarFamiliasRegistradas(lista_familias); 
-                // mostrarReporteInventario(inventario); 
-                // mostrarEstadoColas(&cola_medica, &cola_insumos); 
-                break;
-                
-            case 5:
                 printf("\n--- DESHACER ULTIMA ACCION ---\n");
                 ColaAtencion *ptr = &cola_medica;
                 deshacerUltimaOperacion(&historial_operaciones, &lista_familias, &ptr, inventario);
                 break;
                 
-            case 6:
-                printf("\nGuardando datos...\n");
+            case 5:
+                printf("\nGuardando datos en disco...\n");
                 guardarDatosArchivo(&lista_familias, inventario, &cola_medica, &cola_insumos);
-                printf("¡Hasta pronto!\n");
+                printf("¡Sistema cerrado exitosamente, hasta pronto!\n");
                 break;
                 
             default:
-                printf("\n[!] Opcion no valida (1-6).\n");
+                printf("\n[!] Opcion no valida (1-5).\n");
         }
         
-        // Evitamos pausar la pantalla si entraron al caso 1, porque el menuFamilias ya hace su propia pausa al salir.
-        if (opcion != 6 && opcion != 1) {
+        if (opcion != 5 && opcion != 1) {
             pausarPantalla(); 
         }
         
-    } while(opcion != 6);
+    } while(opcion != 5);
 
     return 0;
 }
