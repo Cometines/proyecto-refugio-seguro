@@ -36,7 +36,35 @@ void guardarDatosArchivo(Familia** cabeza_lista, Insumo inventario[], ColaAtenci
         printf("Guardado hecho con exito. \n");
     }
 
-    // 2. 
+    // 2. Persistencia del Inventario (5 categorías fijas)
+    FILE* file_inv = fopen("data/inventario.csv", "w");
+    if (file_inv != NULL) {
+        for (int i = 0; i < 5; i++) {
+            fprintf(file_inv, "%d|%s|%d\n",
+                    inventario[i].id_insumo,
+                    inventario[i].nombre,
+                    inventario[i].cantidad_disponible);
+        }
+        fclose(file_inv);
+    }
+
+    // 3. Persistencia del estado de las colas (Tipo de cola y Folio)
+    FILE* file_colas = fopen("data/colas.csv", "w");
+    if (file_colas != NULL) {
+        NodoCola* aux_nodo;
+        // 1 = Cola Médica, 2 = Cola Insumos
+        aux_nodo = cola_medica->frente;
+        while (aux_nodo != NULL) {
+            fprintf(file_colas, "1|%s\n", aux_nodo->datos_familia->folio);
+            aux_nodo = aux_nodo->siguiente;
+        }
+        aux_nodo = cola_insumos->frente;
+        while (aux_nodo != NULL) {
+            fprintf(file_colas, "2|%s\n", aux_nodo->datos_familia->folio);
+            aux_nodo = aux_nodo->siguiente;
+        }
+        fclose(file_colas);
+    }
 }
 
 void cargarDatosArchivo(Familia** cabeza_lista, Insumo inventario[], ColaAtencion* cola_medica, ColaAtencion* cola_insumos){
@@ -71,6 +99,39 @@ void cargarDatosArchivo(Familia** cabeza_lista, Insumo inventario[], ColaAtencio
             *cabeza_lista=nueva_familia;
         }
         fclose(file_familias);
-        printf("Cargado hecho con exito. \n");
+    }
+
+    // 2. Reconstrucción del Inventario
+    FILE* file_inv = fopen("data/inventario.csv", "r");
+    if (file_inv != NULL) {
+        int i = 0;
+        while (fgets(linea, sizeof(linea), file_inv) && i < 5) {
+            token = strtok(linea, "|");
+            if (token) inventario[i].id_insumo = atoi(token);
+            token = strtok(NULL, "|");
+            if (token) strcpy(inventario[i].nombre, token);
+            token = strtok(NULL, "\n");
+            if (token) inventario[i].cantidad_disponible = atoi(token);
+            i++;
+        }
+        fclose(file_inv);
+    }
+
+    // 3. Reconstrucción de las colas vinculando folios con punteros en RAM
+    FILE* file_colas = fopen("data/colas.csv", "r");
+    if (file_colas != NULL) {
+        while (fgets(linea, sizeof(linea), file_colas)) {
+            token = strtok(linea, "|");
+            int tipo = atoi(token);
+            token = strtok(NULL, "\n");
+            if (token) {
+                Familia* f = buscarFamiliaPorFolio(*cabeza_lista, token);
+                if (f) {
+                    if (tipo == 1) encolarFamilia(cola_medica, f);
+                    else if (tipo == 2) encolarFamilia(cola_insumos, f);
+                }
+            }
+        }
+        fclose(file_colas);
     }
 }
