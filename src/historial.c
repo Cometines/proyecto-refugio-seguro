@@ -85,7 +85,7 @@ void recogerOperacion(Operacion** tope_historial, TipoOperacion tipo, char* desc
     operacion_reciente->tipo = tipo;
     strncpy(operacion_reciente->descripcion, desc, 99);
     operacion_reciente->descripcion[99] = '\0';
-
+    
     if (tipo == REGISTRO_FAMILIA || tipo == SERVICIO_MEDICO) {
         strncpy(operacion_reciente->estructuras.folio_involucrado, folio, 15);
         operacion_reciente->estructuras.folio_involucrado[15] = '\0';
@@ -103,7 +103,7 @@ void deshacerUltimaOperacion(Operacion** tope_historial, Familia** cabeza_lista,
         printf("No hay registros de operación\n");
         return;//Interrumpe la función si está vacío (no hay operaciones)
     }
-    printf("hola if");
+    //printf("hola if");
     if(tipoOperacionVacia(tope_historial, cabeza_lista, inventario))//Comprobamos si el tipo de operación que se revertirá se encuentra en el estado necesario (no vacio)
         return;//Interrumpimos la funcion
 
@@ -117,7 +117,7 @@ void deshacerUltimaOperacion(Operacion** tope_historial, Familia** cabeza_lista,
             break;
         }
         //Para inventario de insumos
-        case ENTREGA_APOYO:
+        case ENTREGA_APOYO: {
         //cant_colchonetas = 1 por integrante de familia por lo tanto intg = cantidad de colchonetas (cantidad_involucrado)
 //            printf("hola entrega");
             int intg = (*tope_historial)->estructuras.cantidad_involucrado;
@@ -141,7 +141,7 @@ void deshacerUltimaOperacion(Operacion** tope_historial, Familia** cabeza_lista,
 
             printf("Se ha revertido la entrega de insumos y devuelto todo el stock.\n");
             break;
-        
+        }
         case SERVICIO_MEDICO:
             if (historial_colas != NULL && (*historial_colas)->siguiente != NULL) {
                 Colas* estado_equivocado = *historial_colas;

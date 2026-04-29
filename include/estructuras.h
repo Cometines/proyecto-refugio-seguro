@@ -57,11 +57,11 @@ typedef enum{
 }TipoOperacion;
 
 typedef union Estructuras{
-    struct familia{
+    struct {
         char folio_involucrado[16];
     };
 
-    struct inventario{
+    struct {
         int id_insumo_involucrado;
         int cantidad_involucrado;
     };
