@@ -8,6 +8,7 @@
 
 #include "../include/menu.h"
 #include "../include/familias.h"
+#include "../include/atencion.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -82,7 +83,7 @@ static void validarDatosRepresentante(char *nombre_direccion, int *edad_direccio
     char *nombre_temporal;
     int edad_temporal;
     do{
-        nombre_temporal = pedirCadena("Ingrese el nombre del representante de la familia");
+        nombre_temporal = pedirCadena("Ingrese el nombre del representante de la familia: ");
         edad_temporal = pedirEntero("Ingrese la edad del representante: ");
         if ( ( flag=mayorEdad(edad_temporal) ) == false ){
             printf("La edad del representante no es la adecuada, por lo que ingrese a una persona apta para el registro\n");
@@ -90,6 +91,7 @@ static void validarDatosRepresentante(char *nombre_direccion, int *edad_direccio
     }while(flag != true);
     *edad_direccion = edad_temporal;
     strcpy(nombre_direccion, nombre_temporal);
+    free(nombre_temporal);
 }
 
 /**
@@ -110,9 +112,9 @@ static void nivelAtencionFamilia(NivelAtencion *nivel_asignado,char *requerimien
         printf("Nota : Por defecto todas las familias seran referidas a la zona de insumos\n");
         printf("1. Atencion basica(Solo necesita insumos).\n");
         printf("2. Atención medica\n");
-        printf("3.Atencion especial \n");
-        printf("4.Atencion completa\n");
-        nivel_asignado = pedirEntero ("");
+        printf("3. Atencion especial \n");
+        printf("4. Atencion completa\n");
+        *nivel_asignado = (NivelAtencion)pedirEntero ("Ingrese una opcion: ");
         //Arranca los valores con valores iniciales para evitar problemas con valores basura en la ram
         strcpy(requerimiento_especial,"Vacio");
         *requerimiento_especial_atentido = false;
@@ -126,12 +128,19 @@ static void nivelAtencionFamilia(NivelAtencion *nivel_asignado,char *requerimien
                 printf("Seleccionaste: Medica\n");
                 break;
             case ATENCION_ESPECIAL:
-                printf("Seleccionaste: Especial\n");
-                requerimiento_especial = pedirCadena("Ingrese su requerimiento especial:");
-                break;
-            case ATENCION_COMPLETA:
-                printf("Seleccionaste: Completa\n");
-                requerimiento_especial = pedirCadena("Ingrese su requerimiento especial:");
+            case ATENCION_COMPLETA: // Agrupamos ambos casos porque hacen lo mismo
+                printf("Seleccionaste: %s\n", *nivel_asignado == ATENCION_ESPECIAL ? "Especial" : "Completa");
+                // Por alguna razón no funciona hacerlo directo, asi que usamos una variable temporal
+                // 1. Recibimos la memoria en una variable temporal
+                char* temp = pedirCadena("Ingrese su requerimiento especial: ");
+                
+                // 2. Si no hubo error, copiamos el texto
+                if (temp != NULL) {
+                    strcpy(requerimiento_especial, temp);
+                    
+                    // 3. Evitamos un memory leak (fuga de memoria)
+                    free(temp); 
+                }
                 break;
             default:
                 printf("Opcion no valida, intenta de nuevo.\n");
@@ -142,30 +151,24 @@ static void nivelAtencionFamilia(NivelAtencion *nivel_asignado,char *requerimien
     
 }
 
-static void confirmarOperacion(const char *prefijo_operacion,Familia *Operacion){
-    bool flag=false;
+static bool confirmarOperacion(const char *prefijo_operacion){
     int op;
-    do{
-        printf("%s\n",prefijo_operacion);
-        printf("1. Confirmar operación\n");
-        printf("2. Cancelar la operación\n");
-        op = pedirEntero("Ingrese su opción: \n");
-        switch (op)
-        {
-        case 1:
-            printf("La operación ha sido confirmada\n");
-            flag=true;
-            break;
-        case 2:
-            printf("La operación ha sido cancelada exitosamente\n");
-            free(Operacion);
-            flag=true;
-            break;
-        default: printf("Opción no valida\n");
-            break;
+    do {
+        printf("%s\n", prefijo_operacion);
+        printf("1. Confirmar operacion\n");
+        printf("2. Cancelar la operacion\n");
+        op = pedirEntero("Ingrese su opcion: \n");
+        
+        if (op == 1) {
+            printf("La operacion ha sido confirmada\n");
+            return true;
+        } else if (op == 2) {
+            printf("La operacion ha sido cancelada exitosamente\n");
+            return false;
+        } else {
+            printf("Opcion no valida\n");
         }
-    }while (flag!=true);
-
+    } while (true);
 }
 
 /**
@@ -175,7 +178,7 @@ static void confirmarOperacion(const char *prefijo_operacion,Familia *Operacion)
  * modifique la dirección de memoria de la cabeza original de la lista, 
  * permitiendo la inserción de nuevos nodos.
  */
-void registrarFamilia(Familia** cabeza_lista){
+void registrarFamilia(Familia** cabeza_lista, ColaAtencion* cola_medica, ColaAtencion* cola_insumos){
     //validación de los datos del representante.
     char nombre_valido[50];
     int edad_valida=0;
@@ -194,17 +197,23 @@ void registrarFamilia(Familia** cabeza_lista){
     //Registro de la familia y sus campos.
     strcpy(familia_nueva->nombre_representante,nombre_valido);
     familia_nueva->edad_representante = edad_valida;
-    familia_nueva->cantidad_integrantes = pedirEntero ("Ingrese la cantidad de integrantes de la familia");
+    familia_nueva->cantidad_integrantes = pedirEntero ("Ingrese la cantidad de integrantes de la familia: ");
 
     nivelAtencionFamilia(&familia_nueva->nivel_asignado,familia_nueva->requerimiento_especial, &familia_nueva->requerimiento_especial_atendido);
 
     //generación y asignación del folio.
     generarFolio("FAM",familia_nueva->folio);
 
-    confirmarOperacion("¿Desea confirmar el registro de la familia?",familia_nueva);
+    if(!confirmarOperacion("¿Desea confirmar el registro de la familia?")){
+        free(familia_nueva);
+        return;
+    }
     //inserción en la lista
     familia_nueva ->siguiente= *cabeza_lista;
     *cabeza_lista = familia_nueva;
+
+    //Se encola la familia a la fila correspondiente
+    enrutarFamilia(cola_medica, cola_insumos, familia_nueva);
 } 
 
 /**
@@ -284,7 +293,7 @@ Familia* buscarFamiliaPorFolio(Familia* cabeza_lista, char *folio){
  * Es fundamental para que las modificaciones (como el alta de una familia) persistan 
  * en la estructura original del programa.
  */
-void menuFamilias (Familia** puntero_lista_main){
+void menuFamilias (Familia** puntero_lista_main, ColaAtencion* cola_medica, ColaAtencion* cola_insumos){
     Familia *aux;
     int op;
     char *folio;
@@ -300,7 +309,7 @@ void menuFamilias (Familia** puntero_lista_main){
         switch (op)
         {
         case 1:
-            registrarFamilia(puntero_lista_main);
+            registrarFamilia(puntero_lista_main, cola_medica, cola_insumos);
             break;
 
         case 2:

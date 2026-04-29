@@ -31,12 +31,10 @@ void enrutarFamilia(ColaAtencion* cola_medica, ColaAtencion* cola_insumos, Famil
 void atenderColaMedica(ColaAtencion* cola_medica, ColaAtencion* cola_insumos, Operacion** tope_historial);
 
 // Atiende a la familia del frente, se guarda la operación y se resta en el stock del inventario
-void atenderColaInsumos(ColaAtencion* cola_insumos);
-
-// Buscar a la familia con requerimiento especial y atenderlo (marcar como true el campo)
-void entregarRequerimientoEspecial(Familia* familia_objetivo,Operacion** tope_historial);
+void atenderColaInsumos(ColaAtencion* cola_insumos, Insumo inventario[], Operacion** tope_historial);
 
 // Imprimir un reporte visual de las familias que están esperando
 void mostrarEstadoColas(ColaAtencion* cola_medica, ColaAtencion* cola_insumos);
+
 
 #endif
