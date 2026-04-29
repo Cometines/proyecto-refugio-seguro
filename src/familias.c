@@ -9,6 +9,7 @@
 #include "../include/menu.h"
 #include "../include/familias.h"
 #include "../include/atencion.h"
+#include "../include/historial.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -178,7 +179,7 @@ static bool confirmarOperacion(const char *prefijo_operacion){
  * modifique la dirección de memoria de la cabeza original de la lista, 
  * permitiendo la inserción de nuevos nodos.
  */
-void registrarFamilia(Familia** cabeza_lista, ColaAtencion* cola_medica, ColaAtencion* cola_insumos){
+void registrarFamilia(Familia** cabeza_lista, ColaAtencion* cola_medica, ColaAtencion* cola_insumos, Operacion** tope_historial, Colas** historial_colas){
     //validación de los datos del representante.
     char nombre_valido[50];
     int edad_valida=0;
@@ -212,8 +213,10 @@ void registrarFamilia(Familia** cabeza_lista, ColaAtencion* cola_medica, ColaAte
     familia_nueva ->siguiente= *cabeza_lista;
     *cabeza_lista = familia_nueva;
 
+    guardarEstadoColas(historial_colas);
+    recogerOperacion(tope_historial, REGISTRO_FAMILIA, "Registro de familia", familia_nueva->folio, 0, 0);
     //Se encola la familia a la fila correspondiente
-    enrutarFamilia(cola_medica, cola_insumos, familia_nueva);
+    enrutarFamilia(&(*historial_colas)->cola_medica, &(*historial_colas)->cola_insumos, familia_nueva);
 } 
 
 /**
@@ -293,7 +296,7 @@ Familia* buscarFamiliaPorFolio(Familia* cabeza_lista, char *folio){
  * Es fundamental para que las modificaciones (como el alta de una familia) persistan 
  * en la estructura original del programa.
  */
-void menuFamilias (Familia** puntero_lista_main, ColaAtencion* cola_medica, ColaAtencion* cola_insumos){
+void menuFamilias (Familia** puntero_lista_main, ColaAtencion* cola_medica, ColaAtencion* cola_insumos, Operacion** tope_historial, Colas** historial_colas){
     Familia *aux;
     int op;
     char *folio;
@@ -309,7 +312,7 @@ void menuFamilias (Familia** puntero_lista_main, ColaAtencion* cola_medica, Cola
         switch (op)
         {
         case 1:
-            registrarFamilia(puntero_lista_main, cola_medica, cola_insumos);
+            registrarFamilia(puntero_lista_main, cola_medica, cola_insumos, tope_historial, historial_colas);
             break;
 
         case 2:

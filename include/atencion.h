@@ -9,8 +9,10 @@
 // ===================================
 
 // Para inicializar los punteros de la cola (frente y fondo)=null;
+
 void inicializarCola(ColaAtencion *cola_objetivo);
 
+void guardarEstadoColas(Colas** historial_colas);
 // Recibe a que cola se van a mandar, recibe la familia que se va a encolar
 void encolarFamilia(ColaAtencion *cola_objetivo, Familia *familia_a_encolar);
 
@@ -28,13 +30,13 @@ bool colaVacia(ColaAtencion *cola_objetivo);
 void enrutarFamilia(ColaAtencion* cola_medica, ColaAtencion* cola_insumos, Familia* nueva_familia);
 
 // Atiende a la familia del frente, se guarda la operación y se encola en la cola de insumos
-void atenderColaMedica(ColaAtencion* cola_medica, ColaAtencion* cola_insumos, Operacion** tope_historial);
+void atenderColaMedica(ColaAtencion* cola_medica, ColaAtencion* cola_insumos, Operacion** tope_historial, Colas** historial_colas);
 
 // Atiende a la familia del frente, se guarda la operación y se resta en el stock del inventario
-void atenderColaInsumos(ColaAtencion* cola_insumos, Insumo inventario[], Operacion** tope_historial);
+void atenderColaInsumos(ColaAtencion* cola_insumos, Insumo inventario[], Operacion** tope_historial, Colas** historial_colas);
 
 // Imprimir un reporte visual de las familias que están esperando
-void mostrarEstadoColas(ColaAtencion* cola_medica, ColaAtencion* cola_insumos);
+void mostrarEstadoColas(Colas** historial_colas);
 
 
 #endif
