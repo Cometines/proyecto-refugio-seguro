@@ -32,18 +32,17 @@ void mostrarMenu() {
 int pedirEntero(const char* mensaje){
     int digito = 0, n = 0;
     printf("%s", mensaje);
-    do
-    {
+    do {
         n = scanf("%d", &digito);
-        if (n !=1)
-        {
-            printf("Por favor, ingresa un valor númerico valido: ");
-            int c;
-            while ((c = getchar()) != '\n' && c != EOF) {
-                // Descarta caracteres
-            }
+        
+        // LIMPIEZA DE BUFFER: Destruye el 'Enter' sobrante siempre
+        int c;
+        while ((c = getchar()) != '\n' && c != EOF);
+
+        if (n != 1) {
+            printf("Por favor, ingresa un valor numerico valido: ");
         }
-    } while (n!=1);
+    } while (n != 1);
     return digito;
 }
 
