@@ -49,16 +49,23 @@ typedef enum{
     ENTREGA_APOYO = 2
 }TipoOperacion;
 
+typedef union Estructuras{
+    struct familia{
+        int folio_involucrado;
+    };
+
+    struct inventario{
+        int id_insumo_involucrado;
+        int cantidad_involucrado;
+    };
+
+}Estructuras;
+
 typedef struct Operacion{
     TipoOperacion tipo;
     char descripcion[100];
-
-    int folio_involucrado;
-    int id_insumo_involucrado;
-    int cantidad_involucrada;
+    Estructuras estructuras;
 
     struct Operacion* siguiente;
 }Operacion;
-
-
 #endif

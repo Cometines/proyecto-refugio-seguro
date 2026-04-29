@@ -34,10 +34,11 @@ static bool vacio(){
 static bool tipoOperacionVacia(TipoOperacion tipo, Familia** cabeza_lista, Insumo inventario[]){
     if (tipo == REGISTRO_FAMILIA && cabeza_lista == NULL)
         return true;
-    if (tipo == ENTREGA_APOYO && inventario[operacion_reciente->id_insumo_involucrado].cantidad_disponible <= 0)
+    if (tipo == ENTREGA_APOYO && inventario[operacion_reciente->estructuras.id_insumo_involucrado].cantidad_disponible <= 0)
         return true;
     return false;
 }
+
 /** 
  *  @brief Función de apoyo que guarda la nueva acción en la cima de la pila.
  *  @param tope_historial Parametro struct de tipo Operacion que almacena el historial de operaciones
@@ -53,43 +54,23 @@ static void apilarOperacion(Operacion** tope_historial){
     }
 }
 
-/** 
- *  @brief Recoge los valores de la operación nueva.
- *  @param tope_historial Parametro struct de tipo Operacion que almacena el historial de operaciones.
- *  @param tipo Parametro tipo enum que indicará el tipo de operación (REGISTRO_FAMILIA o ENTREGA_APOYO).
- *  @param desc Parametro tipo char que almacena una descripción/reporte de la operación.
- *                      @pre El char que se reciba no debe exceder el tamaño máximo de 100 bytes.
- *                      @pre No debe ser NULL.
- *  @param folio Parametro tipo int que almacena el folio del registro de una familia.
- *  @param id_insumo Parametro tipo int que tiene la finalidad de usarse como id de insumo pero se usa, en contexto de código, como index de un arreglo.
- *                      @invariant Sus valores solo pueden ir de 1 a 5 
- *                      @warning No debe ser NULL y debe cumplir con las condiciones siguientes.
- *                      @pre El valor debe ser tipo int
- *                      @pre Su valor no debe ser menos de 1.
- *                      @pre Su valor no debe sobrepasar 5.
- * 
- *  @param cantidad Parametro de tipo int que almacena la cantidad de un tipo de insumo.
-*/
 void recogerOperacion(Operacion** tope_historial, TipoOperacion tipo, char* desc, int folio, int id_insumo, int cantidad){
     operacion_reciente = (Operacion*) malloc(sizeof(Operacion));
     operacion_reciente->tipo = tipo;
     strncpy(operacion_reciente->descripcion, desc, 99);
     operacion_reciente->descripcion[99] = '\0';
-    operacion_reciente->folio_involucrado = folio;
-    operacion_reciente->id_insumo_involucrado = id_insumo;
-    operacion_reciente->cantidad_involucrada = cantidad;
+
+    if (tipo == REGISTRO_FAMILIA) {
+        operacion_reciente->estructuras.folio_involucrado = folio;
+    }
+    else if (tipo == ENTREGA_APOYO) {
+        operacion_reciente->estructuras.id_insumo_involucrado = id_insumo;
+        operacion_reciente->estructuras.cantidad_involucrado = cantidad;
+    }
     apilarOperacion(tope_historial);
 }
 
-/**
- * @brief Revierte la última acción y la saca de la pila
- * 
- * @param tope_historial Parametro struct de tipo Operacion que almacena el historial de operaciones.
- * @param cabeza_lista Parametro struct de tipo Familia que almacena la lista de familias (Cabeza hace referencia al ultimo familiar registrado).
- *                      @note Aquí solo lo usamos para volver al estado anterior de la estructura.
- * @param inventario Parametro Array que almacena 5 struct no autoreferenciales de tipo Insumo (no es una lista enlazada) y funge como inventario.
- */
-void deshacerUltimaOperacion(Operacion** tope_historial, Familia** cabeza_lista, Insumo inventario[]){
+void deshacerUltimaOperacion(Operacion** tope_historial, Familia** cabeza_lista, ColaAtencion** cola_atencion, Insumo inventario[]){
     if (vacio()){//Comprobamos que la pila de operaciones no esté vacía
         printf("No hay registros de operación");
         return;//Interrumpe la función si está vacío (no hay operaciones)
@@ -102,14 +83,18 @@ void deshacerUltimaOperacion(Operacion** tope_historial, Familia** cabeza_lista,
         //Para Familia
         case REGISTRO_FAMILIA:{
             Familia* familia_reciente = *cabeza_lista;
+            ColaAtencion* cola_atencion_reciente = *cola_atencion;
             *cabeza_lista = (*cabeza_lista)->siguiente;
+            (*cola_atencion)->frente = (*cola_atencion)->frente->siguiente;
+            
             //Borramos (Liberamos usando la palabra reservada free) las operaciones que se introdujeron por último
             free(familia_reciente);
+            free(cola_atencion_reciente);
             break;
         }
         //Para inventario de insumos
         case ENTREGA_APOYO:
-            inventario[(*tope_historial)->id_insumo_involucrado].cantidad_disponible = (*tope_historial)->siguiente->cantidad_involucrada;
+            inventario[(*tope_historial)->estructuras.id_insumo_involucrado].cantidad_disponible = (*tope_historial)->siguiente->estructuras.cantidad_involucrado;
             break;
         
         default:
@@ -126,16 +111,12 @@ void deshacerUltimaOperacion(Operacion** tope_historial, Familia** cabeza_lista,
         primer_operacion = NULL;  
 }
 
-/**
- * @brief Función que se encarga de mostrar el historial de operaciones registrado.
- * 
- * @param tope_historial Parametro struct de tipo Operacion que almacena el historial de operaciones.
- */
 void mostrarHistorial(Operacion** tope_historial){
     if(vacio()){
         printf("No hay registros de operación\n----------------------\n\n");
         return;//Interrumpe la función si está vacío (no hay operaciones)
     }
+    
     printf("\n----------------------\n");
     printf("\n| Tipo de operación\t| Descripción\t| Folio \t| Id de insumo\t| Cantidad");
     printf("\n----------------------\n");
@@ -143,9 +124,16 @@ void mostrarHistorial(Operacion** tope_historial){
     {
         printf("| %d ",operacion_reciente->tipo);
         printf("| %s ",operacion_reciente->descripcion);
-        printf("| %d ",operacion_reciente->folio_involucrado);
-        printf("| %d ",operacion_reciente->id_insumo_involucrado);
-        printf("| %d ",operacion_reciente->cantidad_involucrada);
+        if(operacion_reciente->tipo == REGISTRO_FAMILIA){
+            printf("| %d ",operacion_reciente->estructuras.folio_involucrado);
+            printf("Sin dato");
+            printf("Sin dato");
+        }
+        else if(operacion_reciente->tipo == ENTREGA_APOYO){
+            printf("Sin dato");
+            printf("| %d ",operacion_reciente->estructuras.id_insumo_involucrado);
+            printf("| %d ",operacion_reciente->estructuras.cantidad_involucrado);
+        }
         printf("\n----------------------\n");
     }
 }
