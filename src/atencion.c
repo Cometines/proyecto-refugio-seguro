@@ -1,33 +1,14 @@
-#ifndef ATENCION_H // if not defined
-#define ATENCION_H
+#include "../include/atencion.h"
+#include "../include/historial.h"
+#include "../include/inventario.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-#include "estructuras.h"
-#include <stdbool.h>
-
-// ===================================
-// FUNCIONES PRIMORDIALES PARA COLA (VALERIA)
-// ===================================
-
-// Retornar true si está vacía, si no: retornar false
 bool colaVacia(ColaAtencion *cola_objetivo){
-
     return (cola_objetivo == NULL || cola_objetivo->frente == NULL);
-    printf("\n----COLA VACIA----\n");
 }
-// Para inicializar los punteros de la cola (frente y fondo)=null;
-/**
- * @brief Inicializa una estructura de datos de tipo Cola.
- *
- * Esta función prepara una cola para su uso inicial estableciendo sus 
- * punteros de control (`frente` y `fondo`) a NULL, lo que indica lógicamente 
- * que la cola está vacía. Incluye una validación de seguridad para evitar 
- * una violación de acceso a memoria (segmentation fault) si se pasa un 
- * puntero nulo.
- *
- * @param cola_objetivo Puntero a la estructura Cola que se va a inicializar. 
- * Si el puntero pasado es NULL, la función termina de manera 
- * segura sin realizar ninguna operación.
- */
+
 void inicializarCola(ColaAtencion *cola_objetivo){
     if (cola_objetivo != NULL) {
         cola_objetivo->frente = NULL;
@@ -35,22 +16,16 @@ void inicializarCola(ColaAtencion *cola_objetivo){
     }
 }
 
-
-// Recibe a que cola se van a mandar, recibe la familia que se va a encolar
 void encolarFamilia(ColaAtencion *cola_objetivo, Familia *familia_a_encolar){
-    //colaVacia();
     NodoCola* nuevo_nodo = (NodoCola*)malloc(sizeof(NodoCola));
     if (nuevo_nodo == NULL) {
         fprintf(stderr, "Error: No se pudo asignar memoria para el nodo de la cola.\n");
         return;
     }
 
-    // Asignar la familia
-    
-    nuevo_nodo->datos_familia=familia_a_encolar;
-    nuevo_nodo->siguiente=NULL;
+    nuevo_nodo->datos_familia = familia_a_encolar;
+    nuevo_nodo->siguiente = NULL;
 
-    // Manejar punteros frente y fondo (caso vacía o con elementos)
     if (colaVacia(cola_objetivo)) {
         cola_objetivo->frente = nuevo_nodo;
         cola_objetivo->fondo = nuevo_nodo;
@@ -58,137 +33,141 @@ void encolarFamilia(ColaAtencion *cola_objetivo, Familia *familia_a_encolar){
         cola_objetivo->fondo->siguiente = nuevo_nodo;
         cola_objetivo->fondo = nuevo_nodo;
     }
-
 }
 
-// Saca y devuelve al primer elemento en la cola especificada.
 Familia* desencolarFamilia(ColaAtencion *cola_objetivo){
     if (colaVacia(cola_objetivo)) {
-        return NULL; // No hay familias para desencolar
-        printf("----No hay familias para desencolar----");
+        printf("----La cola esta vacia----\n");
+        return NULL; 
     }
 
-    // Extraer el primer elemento
     NodoCola* nodo_a_eliminar = cola_objetivo->frente;
-    Familia* familia_extraida = nodo_a_eliminar->familia;
+    Familia* familia_extraida = nodo_a_eliminar->datos_familia; // Corregido: era datos_familia, no familia
 
-    // Actualizar punteros
     cola_objetivo->frente = nodo_a_eliminar->siguiente;
 
-    // Si la cola se quedó vacía, actualizamos el fondo a NULL también
     if (cola_objetivo->frente == NULL) {
         cola_objetivo->fondo = NULL;
     }
-    printf("----La familia fue atendida exitosamente----");
-    // Liberar la memoria del nodo
+    
     free(nodo_a_eliminar);
-
-    // Retornar el puntero a la Familia
     return familia_extraida;
 }
 
-// ===================================
-// LÓGICA DEL NEGOCIO
-// ===================================
-
-// Función encargada de determinar a que cola se manda a la familia segun el atributo: NivelAtencion
 void enrutarFamilia(ColaAtencion* cola_medica, ColaAtencion* cola_insumos, Familia* nueva_familia){
-    
-    //      USO DE SWITCH
+    if(nueva_familia == NULL) return;
+
     switch(nueva_familia->nivel_asignado){
         case ATENCION_BASICA:
         case ATENCION_ESPECIAL:
             encolarFamilia(cola_insumos, nueva_familia); 
-            printf("Familia con folio: %s formada en cola de insumos.", nueva_familia->folio);
+            printf("Familia con folio: %s formada en COLA DE INSUMOS.\n", nueva_familia->folio);
             break;
         case ATENCION_MEDICA:
         case ATENCION_COMPLETA:
             encolarFamilia(cola_medica, nueva_familia); 
-            printf("Familia con folio: %s formada en cola medica.", nueva_familia->folio);
+            printf("Familia con folio: %s formada en COLA MEDICA.\n", nueva_familia->folio);
             break;
         default:
-            printf("Nivel de atencion desconocido");
+            printf("Nivel de atencion desconocido\n");
     }
 }
-// Atiende a la familia del frente, se guarda la operación y se encola en la cola de insumos
+
 void atenderColaMedica(ColaAtencion* cola_medica, ColaAtencion* cola_insumos, Operacion** tope_historial){
     if (colaVacia(cola_medica)) {
+        printf("No hay familias en la cola medica.\n");
         return;
     }
-    // 1. Sacar a la familia de cola_medica
-    Familia* Operacion = desencolarFamilia(cola_medica);
-
-    // 2. Crear un registro de Operacion para la pila de historial
-    registrarEnHistorial(tope_historial, familia->nivel_asignado, "Atencion Medica Completada");
-
-    // 3. Encolarla automáticamente en cola_insumos
-    encolarFamilia(cola_insumos, f);
-}
-
     
-// Atiende a la familia del frente, se guarda la operación y se resta en el stock del inventario
-void atenderColaInsumos(ColaAtencion* cola_insumos){
- // 1. Sacar a la familia de la cola
-    Familia* liberar = desencolarFamilia(cola_insumos);
-
-    if (stock_global != NULL) {
-        *stock_global -= insumos_requeridos;
-        if (*stock_global < 0) {
-            *stock_global = 0; // Evitar stock negativo por seguridad
-        }
-    }
-
+    Familia* fam_atendida = desencolarFamilia(cola_medica);
+    printf("El medico ha finalizado la atencion de la familia %s.\n", fam_atendida->folio);
+    
+    // Ahora pasa a la cola de insumos
+    encolarFamilia(cola_insumos, fam_atendida);
+    printf("La familia ha sido transferida a la COLA DE INSUMOS.\n");
 }
 
-// Imprimir un reporte visual de las familias que están esperando
+void atenderColaInsumos(ColaAtencion* cola_insumos, Insumo inventario[], Operacion** tope_historial){
+    if (colaVacia(cola_insumos)) {
+        printf("No hay familias en la cola de insumos.\n");
+        return;
+    }
+    
+    Familia* fam = desencolarFamilia(cola_insumos);
+    int intg = fam->cantidad_integrantes;
+    
+    // Cálculos de raciones en base a la cantidad de integrantes
+    int cant_colchonetas = intg * 1;
+    int cant_agua = intg * 3;
+    int cant_alimentos = intg * 2;
+    int cant_higiene = intg * 1;
+    int cant_medicamentos = intg * 1;
+    
+    // Descontar del inventario y registrar en el historial según el ID de inicializarInventario
+    
+    // 0: Colchonetas
+    actualizarInsumo(inventario, 0, -cant_colchonetas);
+    recogerOperacion(tope_historial, ENTREGA_APOYO, "Entrega de Colchonetas", 0, 0, cant_colchonetas);
+    
+    // 1: Agua
+    actualizarInsumo(inventario, 1, -cant_agua);
+    recogerOperacion(tope_historial, ENTREGA_APOYO, "Entrega de Agua", 0, 1, cant_agua);
+    
+    // 2: Alimentos
+    actualizarInsumo(inventario, 2, -cant_alimentos);
+    recogerOperacion(tope_historial, ENTREGA_APOYO, "Entrega de Alimentos", 0, 2, cant_alimentos);
+    
+    // 3: Kits de higiene
+    actualizarInsumo(inventario, 3, -cant_higiene);
+    recogerOperacion(tope_historial, ENTREGA_APOYO, "Entrega de Kits de Higiene", 0, 3, cant_higiene);
+    
+    // 4: Medicamentos basicos
+    actualizarInsumo(inventario, 4, -cant_medicamentos);
+    recogerOperacion(tope_historial, ENTREGA_APOYO, "Entrega de Medicamentos", 0, 4, cant_medicamentos);
+    
+    fam->requerimiento_especial_atendido = true; // Marcamos a la familia como atendida
+
+    printf("\nSe ha entregado el apoyo completo a la familia %s (Integrantes: %d).\n", fam->folio, intg);
+    printf("- %d Colchonetas\n", cant_colchonetas);
+    printf("- %d Raciones de Agua\n", cant_agua);
+    printf("- %d Raciones de Alimentos\n", cant_alimentos);
+    printf("- %d Kits de Higiene\n", cant_higiene);
+    printf("- %d Medicamentos Basicos\n", cant_medicamentos);
+}
+
 void mostrarEstadoColas(ColaAtencion* cola_medica, ColaAtencion* cola_insumos){
-//IMPRIMIR EL ESTAOD DE LAS COLAS (CON ESTETICA)
-// Encabezado principal
     printf("\n=================================================\n");
     printf("           ESTADO ACTUAL DE LAS COLAS            \n");
     printf("=================================================\n\n");
     
-    // --- COLA MÉDICA ---
-    printf(" [+] COLA MÉDICA\n");
-    printf("+------------+----------------------------------+\n");
-    printf("| %-10s | %-32s |\n", "Folio", "Apellido");
-    printf("+------------+----------------------------------+\n");
-    
+    printf(" [+] COLA MEDICA\n");
+    printf("+-----------------+----------------------------------+\n");
+    printf("| %-15s | %-32s |\n", "Folio", "Representante");
+    printf("+-----------------+----------------------------------+\n");
     if (colaVacia(cola_medica)) {
-        // Reservamos 45 espacios (10 del folio + 3 del separador + 32 del apellido)
-        printf("| %-45s |\n", " [Cola Vacía]"); 
+        printf("| %-50s |\n", " [Cola Vacia]"); 
     } else {
         NodoCola* actual = cola_medica->frente;
         while (actual != NULL) {
-            if (actual->familia != NULL) {
-                // %-10d reserva 10 espacios para el int
-                // %-32.32s reserva 32 espacios y trunca a 32 caracteres max.
-                printf("| %-10d | %-32.32s |\n", actual->familia->Folio, actual->familia->Apellido);
-            }
+            // Corregido: Se usa %s para el folio (es char array) y nombres correctos de la estructura
+            printf("| %-15s | %-32.32s |\n", actual->datos_familia->folio, actual->datos_familia->nombre_representante);
             actual = actual->siguiente;
         }
     }
-    printf("+------------+----------------------------------+\n\n");
+    printf("+-----------------+----------------------------------+\n\n");
 
-    // --- COLA DE INSUMOS ---
     printf(" [+] COLA DE INSUMOS\n");
-    printf("+------------+----------------------------------+\n");
-    printf("| %-10s | %-32s |\n", "Folio", "Apellido");
-    printf("+------------+----------------------------------+\n");
-    
+    printf("+-----------------+----------------------------------+\n");
+    printf("| %-15s | %-32s |\n", "Folio", "Representante");
+    printf("+-----------------+----------------------------------+\n");
     if (colaVacia(cola_insumos)) {
-        printf("| %-45s |\n", " [Cola Vacía]");
+        printf("| %-50s |\n", " [Cola Vacia]");
     } else {
         NodoCola* actual = cola_insumos->frente;
         while (actual != NULL) {
-            if (actual->familia != NULL) {
-                printf("| %-10d | %-32.32s |\n", actual->familia->Folio, actual->familia->Apellido);
-            }
+            printf("| %-15s | %-32.32s |\n", actual->datos_familia->folio, actual->datos_familia->nombre_representante);
             actual = actual->siguiente;
         }
     }
-    printf("+------------+----------------------------------+\n\n");
-
+    printf("+-----------------+----------------------------------+\n\n");
 }
-
-#endif
