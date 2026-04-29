@@ -44,14 +44,21 @@ typedef struct{
     NodoCola* fondo;
 }ColaAtencion;
 
+typedef struct Colas{
+    ColaAtencion cola_medica;
+    ColaAtencion cola_insumos;
+    struct Colas* siguiente;
+}Colas;
+
 typedef enum{
     REGISTRO_FAMILIA = 1,
-    ENTREGA_APOYO = 2
+    ENTREGA_APOYO = 2,
+    SERVICIO_MEDICO = 3
 }TipoOperacion;
 
 typedef union Estructuras{
     struct familia{
-        int folio_involucrado;
+        char folio_involucrado[16];
     };
 
     struct inventario{

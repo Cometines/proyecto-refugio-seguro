@@ -2,7 +2,6 @@
 #define HISTORIAL_H
 
 #include "estructuras.h"
-
 // ==========================================
 // FUNCIONES DE LA PILA (HISTORIAL) | Kelaia
 // ==========================================
@@ -24,7 +23,7 @@
  * 
  *  @param cantidad Parametro de tipo int que almacena la cantidad de un tipo de insumo.
 */
-void recogerOperacion(Operacion** tope_historial, TipoOperacion tipo, char* desc, int folio, int id_insumo, int cantidad);
+void recogerOperacion(Operacion** tope_historial, TipoOperacion tipo, char* desc, char* folio, int id_insumo, int cantidad);
 
 /**
  * @brief Revierte la última acción y la saca de la pila
@@ -34,7 +33,7 @@ void recogerOperacion(Operacion** tope_historial, TipoOperacion tipo, char* desc
  *                      @note Aquí solo lo usamos para volver al estado anterior de la estructura.
  * @param inventario Parametro Array que almacena 5 struct no autoreferenciales de tipo Insumo (no es una lista enlazada) y funge como inventario.
  */
-void deshacerUltimaOperacion(Operacion** tope_historial, Familia** cabeza_lista, ColaAtencion** cola_atencion, Insumo inventario[]);
+void deshacerUltimaOperacion(Operacion** tope_historial, Familia** cabeza_lista, Insumo inventario[], Colas** historial_colas);
 
 /**
  * @brief Función que se encarga de mostrar el historial de operaciones registrado.
